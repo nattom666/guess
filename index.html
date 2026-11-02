@@ -101,6 +101,28 @@ button { font: inherit; color: inherit; }
   background: var(--surface); font-weight: 700; font-size: 15px; padding: 13px 16px;
 }
 .btn2:hover { border-color: var(--muted); }
+.share-main { display: flex; align-items: center; justify-content: center; gap: 8px; background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+.share-main:hover { border-color: transparent; filter: brightness(1.06); }
+.share-main svg { width: 18px; height: 18px; }
+
+.sheet-back { position: fixed; inset: 0; z-index: 50; background: rgba(0, 0, 0, .45); display: flex; align-items: flex-end; justify-content: center; }
+.sheet {
+  width: 100%; max-width: 480px; background: var(--surface); color: var(--ink);
+  border-radius: 22px 22px 0 0; padding: 18px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+  animation: sheet-up .22s ease-out;
+}
+@keyframes sheet-up { from { transform: translateY(100%); } to { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .sheet { animation: none; } }
+.sheet-title { margin: 0 0 14px; text-align: center; font-weight: 700; font-size: 15px; }
+.sheet-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; margin-bottom: 14px; }
+.sheet-item {
+  appearance: none; background: none; border: 0; padding: 4px 0; cursor: pointer; color: var(--ink);
+  display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 11px; line-height: 1.3; text-decoration: none; text-align: center;
+}
+.sheet-icon { width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .14); }
+.sheet-icon svg { width: 26px; height: 26px; }
+.sheet-item:hover .sheet-icon { filter: brightness(1.1); }
+.sheet-close { width: 100%; }
 
 /* タイトル */
 h1 { margin: 0; font-weight: 800; font-size: clamp(34px, 9.5vw, 46px); line-height: 1.22; letter-spacing: -.01em; text-wrap: balance; }
@@ -167,7 +189,7 @@ h1 .hl { color: var(--accent); }
 .verdict { margin: 0; font-weight: 800; font-size: 26px; line-height: 1.35; }
 .verdict.hit { color: var(--accent); }
 .share { background: var(--bg); border-radius: var(--r-md); padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
-.share p { margin: 0; font-size: 14px; user-select: all; -webkit-user-select: all; }
+.share p { margin: 0; font-size: 14px; white-space: pre-line; overflow-wrap: anywhere; user-select: all; -webkit-user-select: all; }
 .hist-box { gap: 0; }
 .hist-box summary { cursor: pointer; font-weight: 700; font-size: 14px; }
 .hist { margin: 12px 0 0; padding-left: 1.3em; display: flex; flex-direction: column; gap: 8px; font-size: 13.5px; }
@@ -299,6 +321,10 @@ h1 .hl { color: var(--accent); }
       <p class="note" id="vLearn"></p>
       <div class="share">
         <p id="shareText"></p>
+        <button class="btn2 share-main" id="share" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          結果を共有する
+        </button>
         <button class="btn2" id="copy" type="button">結果をコピー</button>
       </div>
       <button class="cta" id="again" type="button">もう一回</button>
@@ -318,6 +344,31 @@ h1 .hl { color: var(--accent); }
   <footer class="foot">
     <span id="status"><span class="dot"></span>学習データを読みこみ中…</span>
   </footer>
+</div>
+
+<!-- 端末の共有シート（navigator.share）が使えないブラウザ向けの代わり -->
+<div class="sheet-back" id="sheet" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <p class="sheet-title" id="sheetTitle">結果を共有</p>
+    <div class="sheet-grid">
+      <a class="sheet-item" id="shX" target="_blank" rel="noopener">
+        <span class="sheet-icon" style="background:#000"><svg viewBox="0 0 24 24"><path fill="#fff" d="M18.24 2.25h3.31l-7.23 8.26 8.5 11.24h-6.66l-5.21-6.82-5.97 6.82H1.68l7.73-8.84L1.25 2.25h6.83l4.71 6.23zm-1.16 17.52h1.83L7.08 4.13H5.12z"/></svg></span>X
+      </a>
+      <a class="sheet-item" id="shLine" target="_blank" rel="noopener">
+        <span class="sheet-icon" style="background:#06c755"><svg viewBox="0 0 24 24"><path fill="#fff" d="M12 3.5c-5.3 0-9.5 3.4-9.5 7.7 0 3.8 3.4 7 8 7.6.3.1.7.2.8.5.1.2.1.6 0 .9l-.1.8c0 .2-.2 .9.8.5s5.4-3.2 7.4-5.5c1.4-1.5 2-3.1 2-4.8 0-4.3-4.2-7.7-9.4-7.7z"/><path fill="#06c755" d="M6.2 9.2h1v3.3h1.9v.9H6.2zm3.6 0h1v4.2h-1zm1.9 0h.9l1.8 2.6V9.2h1v4.2h-.9l-1.8-2.6v2.6h-1zm4.4 0h2.8v.9h-1.8v.7h1.8v.9h-1.8v.8h1.8v.9h-2.8z"/></svg></span>LINE
+      </a>
+      <a class="sheet-item" id="shFb" target="_blank" rel="noopener">
+        <span class="sheet-icon" style="background:#1877f2"><svg viewBox="0 0 24 24"><path fill="#fff" d="M13.5 21v-7.5h2.5l.4-3h-2.9V8.6c0-.9.3-1.5 1.5-1.5h1.5V4.4c-.3 0-1.2-.1-2.2-.1-2.2 0-3.7 1.3-3.7 3.8v2.4H8.1v3h2.5V21z"/></svg></span>Facebook
+      </a>
+      <a class="sheet-item" id="shMail">
+        <span class="sheet-icon" style="background:#5d6372"><svg viewBox="0 0 24 24"><path d="M4 6h16v12H4zM4 7l8 6 8-6" fill="none" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/></svg></span>メール
+      </a>
+      <button class="sheet-item" id="shCopy" type="button">
+        <span class="sheet-icon" style="background:var(--accent)"><svg viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></span><span id="shCopyLabel">コピー</span>
+      </button>
+    </div>
+    <button class="btn2 sheet-close" id="sheetClose" type="button">閉じる</button>
+  </div>
 </div>
 
 <script>
@@ -713,13 +764,14 @@ function interp(pts, y) {
 // 事前確率表: p（A寄りか）
 const PRIOR = QUESTIONS.map(q => YEARS.map(y => interp(q.pts, y)));
 
-// 学習: counts = { qid: { year: [a, b] } }, yearCounts = { year: n }
+// 学習: counts = { qid: { year: [a, b] } }
+// 生まれ年の事前分布は一様。どの年の人がよく遊ぶかは使わない（最初の画面で他の人の生まれ年が透けるため）
 const K_PRIOR = 6;
 const KERNEL = [0.25, 0.5, 1, 0.5, 0.25];
 const PMIN = 0.03, PMAX = 0.97;
 
-function buildModel(counts, yearCounts) {
-  counts = counts || {}; yearCounts = yearCounts || {};
+function buildModel(counts) {
+  counts = counts || {};
   const P = [];
   QUESTIONS.forEach((q, qi) => {
     const c = counts[q.id] || {};
@@ -735,13 +787,7 @@ function buildModel(counts, yearCounts) {
     });
     P.push(prow);
   });
-  const prior = YEARS.map(y => {
-    let n = 0;
-    for (let d = -2; d <= 2; d++) n += KERNEL[d + 2] * (yearCounts[y + d] || 0);
-    return 1 + 0.3 * n;
-  });
-  const s = prior.reduce((x, v) => x + v, 0);
-  return { P, prior: prior.map(v => v / s) };
+  return { P, prior: YEARS.map(() => 1 / NY) };
 }
 
 // 答え ans の、年ごとの尤度
@@ -938,6 +984,7 @@ const UmareStore = (() => {
 (() => {
   const $ = id => document.getElementById(id);
   const DECADES = [1950, 1960, 1970, 1980, 1990, 2000, 2010];
+  const SHARE_URL = "https://nattom666.github.io/guess-my-year/";
 
   // ---------- 年の候補マップ ----------
   const cells = {};
@@ -959,6 +1006,7 @@ const UmareStore = (() => {
   function paint(pi, opts) {
     opts = opts || {};
     const mx = Math.max(...pi), top = YEARS[argmax(pi)];
+    if (mx - Math.min(...pi) < 1e-9 * mx) return paintIdle();   // まだ何も絞れていない
     YEARS.forEach((y, i) => {
       const c = cells[y];
       const a = mx > 0 ? Math.pow(pi[i] / mx, 0.8) : 0;
@@ -983,7 +1031,8 @@ const UmareStore = (() => {
     if (!pi) { $("meter").hidden = true; return; }
     const i = argmax(pi);
     const band = pi[i] + (pi[i - 1] || 0) + (pi[i + 1] || 0);   // 前後1年まで含めた確信度
-    const pct = Math.round(100 * band);
+    const base = 3 / NY;   // 何も絞れていない（一様な）ときの band。ここを0%にする
+    const pct = Math.max(0, Math.round(100 * (band - base) / (1 - base)));
     $("meter").hidden = false;
     $("meterFill").style.width = pct + "%";
     $("meterLabel").textContent = "確信度 " + pct + "%";
@@ -991,18 +1040,18 @@ const UmareStore = (() => {
 
   // ---------- 学習データ ----------
   // stats = { counts: {質問id: {年: [A, B]}}, yearCounts: {年: 回数}, games, exact, near }
+  // 判定に使うのは counts だけ。yearCounts（遊んだ人の生まれ年）は使わない
   // 的中率（exact・near）は画面に出さない。集計は Supabase の play_stats にだけ残す
-  let model = buildModel({}, {});
+  let model = buildModel({});
   let storeReady = false, canWrite = true, loaded = false, writing = false;
   let totals = { games: 0 };
   const num = v => (typeof v === "number" && isFinite(v) && v >= 0 ? Math.min(v, 1e6) : 0);
 
   function mergeStats(list) {
-    const counts = {}, yearCounts = {}, t = { games: 0 };
+    const counts = {}, t = { games: 0 };
     for (const s of list) {
       if (!s || typeof s !== "object") continue;
       t.games += num(s.games);
-      for (const [y, n] of Object.entries(s.yearCounts || {})) yearCounts[y] = (yearCounts[y] || 0) + num(n);
       for (const [qid, byYear] of Object.entries(s.counts || {})) {
         if (!byYear || typeof byYear !== "object") continue;
         const dst = counts[qid] || (counts[qid] = {});
@@ -1013,11 +1062,11 @@ const UmareStore = (() => {
         }
       }
     }
-    return { counts, yearCounts, totals: t };
+    return { counts, totals: t };
   }
   function applyStats(live) {
     const m = mergeStats([typeof SEED === "object" ? SEED : null, live]);
-    model = buildModel(m.counts, m.yearCounts);
+    model = buildModel(m.counts);
     totals = m.totals;
   }
   applyStats(null);
@@ -1203,8 +1252,15 @@ const UmareStore = (() => {
     const vt = $("vText");
     vt.classList.toggle("hit", d === 0);
     vt.textContent = d === 0 ? "ピタリ！" : d === 1 ? "おしい！ 1年ずれ" : d + "年ずれ。くやしい…";
-    $("shareText").textContent = "生まれ年あて：" + n + "問で「" + game.guess + "年生まれ」と予想され、" +
+    const msg = "生まれ年あて：" + n + "問で「" + game.guess + "年生まれ」と予想され、" +
       (d === 0 ? "ズバリ当てられた！" : "正解は" + truth + "年（" + d + "年ずれ）でした。");
+    game.shareMsg = msg;
+    $("shareText").textContent = msg + "\n" + SHARE_URL;
+    const enc = encodeURIComponent, full = msg + "\n" + SHARE_URL;
+    $("shX").href = "https://twitter.com/intent/tweet?text=" + enc(msg) + "&url=" + enc(SHARE_URL);
+    $("shLine").href = "https://line.me/R/share?text=" + enc(full);
+    $("shFb").href = "https://www.facebook.com/sharer/sharer.php?u=" + enc(SHARE_URL);
+    $("shMail").href = "mailto:?subject=" + enc("生まれ年あて") + "&body=" + enc(full);
     if (truth >= Y0 && truth <= Y1) paint(game.pi, { showTop: true, range: game.range, truth });
     $("vLearn").textContent = "保存中…";
     $("vLearn").textContent = await record(game, truth, game.guess);
@@ -1231,6 +1287,23 @@ const UmareStore = (() => {
   $("yearInput").addEventListener("input", syncWareki);
   $("sendYear").addEventListener("click", () => {
     const v = clampYear($("yearInput").value); $("yearInput").value = v; settle(v);
+  });
+  // 端末の共有シート（iPhone・Android・Mac など）を優先し、無いブラウザだけ自前のシートを出す
+  const openSheet = () => { $("shCopyLabel").textContent = "コピー"; $("sheet").hidden = false; $("sheetClose").focus(); };
+  const closeSheet = () => { $("sheet").hidden = true; $("share").focus(); };
+  $("share").addEventListener("click", () => {
+    if (!navigator.share) return openSheet();
+    navigator.share({ title: "生まれ年あて", text: game.shareMsg, url: SHARE_URL })
+      .catch(e => { if (!e || e.name !== "AbortError") openSheet(); });
+  });
+  $("sheetClose").addEventListener("click", closeSheet);
+  $("sheet").addEventListener("click", e => { if (e.target === $("sheet")) closeSheet(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("sheet").hidden) closeSheet(); });
+  for (const id of ["shX", "shLine", "shFb", "shMail"]) $(id).addEventListener("click", closeSheet);
+  $("shCopy").addEventListener("click", () => {
+    const ok = () => { $("shCopyLabel").textContent = "コピー済み"; setTimeout(closeSheet, 900); };
+    try { navigator.clipboard.writeText(SHARE_URL).then(ok, () => prompt("リンクをコピーしてください", SHARE_URL)); }
+    catch (e) { prompt("リンクをコピーしてください", SHARE_URL); }
   });
   $("copy").addEventListener("click", () => {
     const text = $("shareText").textContent;
