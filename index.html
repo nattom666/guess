@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>当てます</title>
-<meta name="description" content="2択の質問に答えるだけで、あなたの生まれ年や中学の部活を当てます。答え合わせが増えるほど賢くなります。">
+<meta name="description" content="2択の質問に答えるだけで、あなたの生まれ年・中学の部活・出身大学を当てます。答え合わせが増えるほど賢くなります。">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%233446ff'/%3E%3Cg fill='%23fff'%3E%3Crect x='5' y='40' width='6' height='11' rx='3' opacity='.35'/%3E%3Crect x='13' y='33' width='6' height='18' rx='3' opacity='.5'/%3E%3Crect x='21' y='24' width='6' height='27' rx='3' opacity='.7'/%3E%3Crect x='37' y='24' width='6' height='27' rx='3' opacity='.7'/%3E%3Crect x='45' y='33' width='6' height='18' rx='3' opacity='.5'/%3E%3Crect x='53' y='40' width='6' height='11' rx='3' opacity='.35'/%3E%3C/g%3E%3Crect x='29' y='13' width='6' height='38' rx='3' fill='%23ff4f2e'/%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+1:wght@400;500;700;800&family=Outfit:wght@500;700;800&display=swap">
 <meta property="og:title" content="当てます">
-<meta property="og:description" content="2択の質問に答えるだけで、あなたの生まれ年や中学の部活を当てます。">
+<meta property="og:description" content="2択の質問に答えるだけで、あなたの生まれ年・中学の部活・出身大学を当てます。">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <style>
 /* Layout: 最大480pxの1カラムのアプリ。上にタブと確信度メーター、主役は質問カード、下に候補マップ */
@@ -246,6 +246,19 @@ h1 .hl { color: var(--accent); }
 }
 .app[data-view="q"] .grid-chips { gap: 3px; }
 .app[data-view="q"] .grid-chips .cell { padding: 5px 2px; font-size: 10.5px; }
+/* 上位の候補（候補が多いタブ） */
+.grid-ranking { display: flex; flex-direction: column; gap: 6px; }
+.rank-idle { margin: 6px 0; font-size: 12.5px; color: var(--muted); }
+.rank-row { display: grid; grid-template-columns: minmax(0, 7.5em) 1fr 3em; align-items: center; gap: 8px; font-size: 13px; }
+.rank-name { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rank-bar { height: 8px; border-radius: 999px; background: var(--tile); overflow: hidden; }
+.rank-bar i { display: block; height: 100%; border-radius: inherit; background: rgba(var(--accent-rgb), .55); transition: width .45s ease; }
+.rank-pct { text-align: right; font-family: var(--f-display); font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.rank-row.top .rank-name { color: var(--accent); }
+.rank-row.top .rank-bar i { background: var(--accent); }
+.rank-row.truth .rank-name { color: var(--hot); }
+.rank-row.truth .rank-bar i { background: var(--hot); }
+.app[data-view="q"] .grid-ranking { gap: 4px; }
 .cell.top { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--accent); transform: scale(1.08); color: var(--accent-ink); z-index: 1; }
 .cell.range { box-shadow: inset 0 0 0 1.5px var(--accent); }
 .cell.truth { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--hot); }
@@ -377,7 +390,7 @@ h1 .hl { color: var(--accent); }
   </section>
 
   <section class="map" id="map">
-    <div class="map-head"><span class="map-title" id="mapTitle"></span><span class="map-hint">濃いほど有力</span></div>
+    <div class="map-head"><span class="map-title" id="mapTitle"></span><span class="map-hint" id="mapHint">濃いほど有力</span></div>
     <div class="grid" id="grid"></div>
   </section>
 
@@ -963,6 +976,267 @@ const GAME_CLUB = {
 };
 </script>
 <script>
+// ===== 当てます: 大学タブ（出身大学） =====
+// 候補は「主要な大学85校」と「一覧にない大学」28区分（7地域 × 国公立・私立 × 文系・理系）。
+// 質問の確率は、大学ごとの事実（所在地・国公私立・女子大・医学部など）から関数で出す。
+// 事実ははっきりしているものだけを使い、キャンパスが複数ある大学は所在地を割合で持たせてある。
+// 学生数・難しさ・理系の割合はおおよその値なので、確率を弱めにしてある（答え合わせで学習して直る）。
+
+// 所在地のキー → 地方
+const COLLEGE_REGION = {
+  hokkaido: "hokkaido", miyagi: "tohoku", akita: "tohoku", tohoku_other: "tohoku",
+  tokyo: "kanto", kanagawa: "kanto", chiba: "kanto", saitama: "kanto", kitakanto: "kanto",
+  aichi: "chubu", niigata: "chubu", hokuriku: "chubu", koshin: "chubu", shizuoka: "chubu", chubu_other: "chubu",
+  kyoto: "kinki", osaka: "kinki", hyogo: "kinki", nara: "kinki", shiga: "kinki", kinki_other: "kinki",
+  hiroshima: "chushi", okayama: "chushi", chushi_other: "chushi",
+  fukuoka: "kyushu", kumamoto: "kyushu", nagasaki: "kyushu", kagoshima: "kyushu", okinawa: "kyushu", kyushu_other: "kyushu",
+};
+const COLLEGE_REGION_NAME = { hokkaido: "北海道", tohoku: "東北", kanto: "関東", chubu: "中部", kinki: "近畿", chushi: "中国・四国", kyushu: "九州・沖縄" };
+
+// [キー, 名前, マップ用の短い名前, 所在地, 設置(nat 国立 / pub 公立 / pri 私立), 難しさ1〜5, 規模S/M/L, 理系の割合, 特徴, 23区, 多摩]
+// 特徴: med 医学部 / women 女子大 / christ キリスト教系 / buddhist 仏教系 / kyutei 旧帝大 / single 文系か理系の片方だけ /
+//       lang 外国語が中心 / グループ（march など）/ 場所（ikebukuro など）。「名前:割合」で部分的にあてはまる
+const COLLEGE_LIST = [
+  // 北海道・東北
+  ["hokudai", "北海道大学", "北大", "hokkaido", "nat", 1, "L", .6, "med kyutei", 0, 0],
+  ["tohoku", "東北大学", "東北大", "miyagi", "nat", 1, "L", .65, "med kyutei", 0, 0],
+  ["aiu", "国際教養大学", "国際教養大", "akita", "pub", 2, "S", .02, "single lang:.8", 0, 0],
+  ["tohokugakuin", "東北学院大学", "東北学院", "miyagi", "pri", 4, "M", .2, "christ", 0, 0],
+  // 関東の国公立
+  ["todai", "東京大学", "東大", { tokyo: .95, chiba: .05 }, "nat", 1, "L", .55, "med kyutei todai", .95, 0],
+  ["kagakudai", "東京科学大学（旧 東工大・医科歯科大）", "東京科学大", { tokyo: .85, kanagawa: .15 }, "nat", 1, "M", .97, "med single kanda:.15", .85, 0],
+  ["hitotsubashi", "一橋大学", "一橋", "tokyo", "nat", 1, "M", .02, "single", 0, .97],
+  ["tsukuba", "筑波大学", "筑波大", { kitakanto: .95, tokyo: .05 }, "nat", 2, "L", .5, "med", .05, 0],
+  ["chiba", "千葉大学", "千葉大", "chiba", "nat", 2, "L", .5, "med kinokasen", 0, 0],
+  ["yokokoku", "横浜国立大学", "横国", "kanagawa", "nat", 2, "M", .5, "", 0, 0],
+  ["tufs", "東京外国語大学", "東京外大", "tokyo", "nat", 2, "S", .02, "single lang", 0, .97],
+  ["ochanomizu", "お茶の水女子大学", "お茶大", "tokyo", "nat", 2, "S", .35, "women", .97, 0],
+  ["noko", "東京農工大学", "農工大", "tokyo", "nat", 2, "S", .95, "single", 0, .97],
+  ["dentsu", "電気通信大学", "電通大", "tokyo", "nat", 3, "S", .97, "single", 0, .97],
+  ["gakugei", "東京学芸大学", "学芸大", "tokyo", "nat", 3, "S", .3, "single", 0, .97],
+  ["saitama", "埼玉大学", "埼玉大", "saitama", "nat", 3, "M", .5, "", 0, 0],
+  ["tmu", "東京都立大学", "都立大", "tokyo", "pub", 2, "M", .5, "", .15, .85],
+  ["yokoshi", "横浜市立大学", "横浜市大", "kanagawa", "pub", 3, "S", .4, "med", 0, 0],
+  // 関東の私立
+  ["waseda", "早稲田大学", "早稲田", { tokyo: .9, saitama: .1 }, "pri", 1, "L", .35, "waseda sokei", .9, 0],
+  ["keio", "慶應義塾大学", "慶應", { tokyo: .45, kanagawa: .55 }, "pri", 1, "L", .35, "med keio sokei", .45, 0],
+  ["sophia", "上智大学", "上智", "tokyo", "pri", 2, "M", .15, "christ lang:.35", .95, 0],
+  ["icu", "国際基督教大学（ICU）", "ICU", "tokyo", "pri", 2, "S", .2, "christ lang:.2", 0, .97],
+  ["rikadai", "東京理科大学", "理科大", { tokyo: .7, chiba: .3 }, "pri", 2, "L", .93, "ichigaya:.5", .7, 0],
+  ["meiji", "明治大学", "明治", { tokyo: .8, kanagawa: .2 }, "pri", 3, "L", .25, "march kanda:.75", .8, 0],
+  ["aogaku", "青山学院大学", "青学", { tokyo: .7, kanagawa: .3 }, "pri", 3, "L", .2, "christ march aoyama:.7", .7, 0],
+  ["rikkyo", "立教大学", "立教", { tokyo: .85, saitama: .15 }, "pri", 3, "L", .1, "christ march ikebukuro:.85", .85, 0],
+  ["chuo", "中央大学", "中央", "tokyo", "pri", 3, "L", .2, "march ichigaya:.1", .45, .55],
+  ["hosei", "法政大学", "法政", "tokyo", "pri", 3, "L", .2, "march ichigaya:.55", .55, .45],
+  ["gakushuin", "学習院大学", "学習院", "tokyo", "pri", 3, "M", .1, "march:.3 mejiro:.95", .97, 0],
+  ["nichidai", "日本大学", "日大", { tokyo: .65, chiba: .2, kanagawa: .07, tohoku_other: .05, shizuoka: .03 }, "pri", 4, "L", .4, "med nittokomasen huge kanda:.3 setagaya:.15", .55, .02],
+  ["toyo", "東洋大学", "東洋", { tokyo: .75, saitama: .25 }, "pri", 4, "L", .25, "nittokomasen", .75, 0],
+  ["komazawa", "駒澤大学", "駒澤", "tokyo", "pri", 4, "L", .05, "buddhist nittokomasen single:.6 setagaya:.95", .97, 0],
+  ["senshu", "専修大学", "専修", { tokyo: .45, kanagawa: .55 }, "pri", 4, "L", .02, "nittokomasen single kanda:.45", .45, 0],
+  ["seikei", "成蹊大学", "成蹊", "tokyo", "pri", 3, "M", .2, "seisei", 0, .97],
+  ["seijo", "成城大学", "成城", "tokyo", "pri", 3, "M", .02, "seisei single setagaya:.97", .97, 0],
+  ["meigaku", "明治学院大学", "明学", { tokyo: .6, kanagawa: .4 }, "pri", 4, "M", .02, "christ seisei single", .6, 0],
+  ["kokugakuin", "國學院大學", "國學院", { tokyo: .8, kanagawa: .2 }, "pri", 4, "M", .02, "seisei single aoyama:.75", .8, 0],
+  ["musashi", "武蔵大学", "武蔵", "tokyo", "pri", 4, "S", .02, "seisei single", .97, 0],
+  ["shibaura", "芝浦工業大学", "芝浦工大", { tokyo: .6, saitama: .4 }, "pri", 4, "M", .97, "single", .6, 0],
+  ["tokai", "東海大学", "東海大", { kanagawa: .6, tokyo: .25, kumamoto: .07, hokkaido: .08 }, "pri", 4, "L", .5, "med aoyama:.1", .25, 0],
+  ["teikyo", "帝京大学", "帝京", { tokyo: .85, kitakanto: .08, fukuoka: .07 }, "pri", 5, "L", .4, "med", .45, .4],
+  ["kanagawa", "神奈川大学", "神奈川大", "kanagawa", "pri", 4, "L", .3, "", 0, 0],
+  ["tsuda", "津田塾大学", "津田塾", "tokyo", "pri", 3, "S", .15, "women", .3, .7],
+  ["twcu", "東京女子大学", "東京女子大", "tokyo", "pri", 3, "S", .1, "women christ", .97, 0],
+  ["jwu", "日本女子大学", "日本女子大", "tokyo", "pri", 4, "M", .2, "women mejiro:.9", .97, 0],
+  ["nodai", "東京農業大学", "東京農大", { tokyo: .75, kanagawa: .15, hokkaido: .1 }, "pri", 4, "M", .9, "single:.7 setagaya:.75", .75, 0],
+  ["juntendo", "順天堂大学", "順天堂", { tokyo: .55, chiba: .35, shizuoka: .1 }, "pri", 3, "M", .75, "med single:.6 kanda:.5", .55, 0],
+  // 中部
+  ["meidai", "名古屋大学", "名大", "aichi", "nat", 1, "L", .55, "med kyutei", 0, 0],
+  ["nitech", "名古屋工業大学", "名工大", "aichi", "nat", 3, "S", .97, "single", 0, 0],
+  ["nagoyashi", "名古屋市立大学", "名市大", "aichi", "pub", 3, "M", .45, "med", 0, 0],
+  ["kanazawa", "金沢大学", "金沢大", "hokuriku", "nat", 3, "L", .5, "med kinokasen", 0, 0],
+  ["niigata", "新潟大学", "新潟大", "niigata", "nat", 3, "L", .5, "med", 0, 0],
+  ["shinshu", "信州大学", "信州大", "koshin", "nat", 3, "L", .55, "med", 0, 0],
+  ["shizuoka", "静岡大学", "静岡大", "shizuoka", "nat", 3, "M", .55, "", 0, 0],
+  ["nanzan", "南山大学", "南山", "aichi", "pri", 4, "M", .1, "christ lang:.3", 0, 0],
+  ["meijo", "名城大学", "名城", "aichi", "pri", 5, "L", .5, "", 0, 0],
+  ["aichi", "愛知大学", "愛知大", "aichi", "pri", 5, "M", .02, "single", 0, 0],
+  ["chukyo", "中京大学", "中京", "aichi", "pri", 5, "L", .2, "", 0, 0],
+  // 近畿
+  ["kyodai", "京都大学", "京大", "kyoto", "nat", 1, "L", .6, "med kyutei kyodai", 0, 0],
+  ["handai", "大阪大学", "阪大", "osaka", "nat", 1, "L", .6, "med kyutei lang:.1", 0, 0],
+  ["kobe", "神戸大学", "神戸大", "hyogo", "nat", 2, "L", .45, "med", 0, 0],
+  ["omu", "大阪公立大学", "大阪公立大", "osaka", "pub", 2, "L", .5, "med", 0, 0],
+  ["hyogo", "兵庫県立大学", "兵庫県立大", "hyogo", "pub", 3, "M", .5, "", 0, 0],
+  ["narajo", "奈良女子大学", "奈良女", "nara", "nat", 3, "S", .35, "women", 0, 0],
+  ["doshisha", "同志社大学", "同志社", "kyoto", "pri", 3, "L", .25, "christ kankandoritsu", 0, 0],
+  ["ritsumei", "立命館大学", "立命館", { kyoto: .45, shiga: .35, osaka: .2 }, "pri", 3, "L", .35, "kankandoritsu", 0, 0],
+  ["kandai", "関西大学", "関大", "osaka", "pri", 3, "L", .25, "kankandoritsu", 0, 0],
+  ["kangaku", "関西学院大学", "関学", "hyogo", "pri", 3, "L", .2, "christ kankandoritsu", 0, 0],
+  ["kyosan", "京都産業大学", "京産", "kyoto", "pri", 5, "L", .2, "sankinkoryu", 0, 0],
+  ["kindai", "近畿大学", "近大", { osaka: .82, nara: .06, hiroshima: .05, fukuoka: .07 }, "pri", 4, "L", .45, "med sankinkoryu", 0, 0],
+  ["konan", "甲南大学", "甲南", "hyogo", "pri", 5, "M", .15, "sankinkoryu", 0, 0],
+  ["ryukoku", "龍谷大学", "龍谷", { kyoto: .75, shiga: .25 }, "pri", 5, "L", .15, "buddhist sankinkoryu", 0, 0],
+  ["kyojo", "京都女子大学", "京都女子大", "kyoto", "pri", 5, "M", .05, "women buddhist", 0, 0],
+  ["gaidai", "関西外国語大学", "関西外大", "osaka", "pri", 4, "M", .02, "single lang", 0, 0],
+  // 中国・四国
+  ["hiroshima", "広島大学", "広島大", "hiroshima", "nat", 2, "L", .5, "med kinokasen", 0, 0],
+  ["okayama", "岡山大学", "岡山大", "okayama", "nat", 3, "L", .5, "med kinokasen", 0, 0],
+  // 九州・沖縄
+  ["kyudai", "九州大学", "九大", "fukuoka", "nat", 1, "L", .55, "med kyutei", 0, 0],
+  ["kyutech", "九州工業大学", "九工大", "fukuoka", "nat", 3, "S", .97, "single", 0, 0],
+  ["kumamoto", "熊本大学", "熊本大", "kumamoto", "nat", 3, "M", .5, "med", 0, 0],
+  ["nagasaki", "長崎大学", "長崎大", "nagasaki", "nat", 3, "M", .5, "med", 0, 0],
+  ["kagoshima", "鹿児島大学", "鹿児島大", "kagoshima", "nat", 3, "M", .5, "med", 0, 0],
+  ["ryukyu", "琉球大学", "琉球大", "okinawa", "nat", 4, "M", .5, "med", 0, 0],
+  ["kitakyu", "北九州市立大学", "北九州市大", "fukuoka", "pub", 4, "M", .15, "", 0, 0],
+  ["fukudai", "福岡大学", "福大", "fukuoka", "pri", 5, "L", .3, "med", 0, 0],
+  ["seinan", "西南学院大学", "西南学院", "fukuoka", "pri", 4, "M", .02, "christ single:.8", 0, 0],
+];
+
+// 一覧にない大学の区分（地域 × 国公立・私立）。特徴はその区分の大学のうち、あてはまる割合のおおよそ
+const COLLEGE_OTHER = {
+  hokkaido: { kok: { hokkaido: 1 }, pri: { hokkaido: 1 } },
+  tohoku: { kok: { miyagi: .15, akita: .1, tohoku_other: .75 }, pri: { miyagi: .4, akita: .05, tohoku_other: .55 } },
+  kanto: { kok: { tokyo: .35, kanagawa: .05, chiba: .05, saitama: .05, kitakanto: .5 }, pri: { tokyo: .55, kanagawa: .15, chiba: .12, saitama: .13, kitakanto: .05 } },
+  chubu: { kok: { aichi: .15, niigata: .1, hokuriku: .25, koshin: .15, shizuoka: .15, chubu_other: .2 }, pri: { aichi: .5, niigata: .07, hokuriku: .1, koshin: .08, shizuoka: .1, chubu_other: .15 } },
+  kinki: { kok: { kyoto: .2, osaka: .15, hyogo: .2, nara: .15, shiga: .1, kinki_other: .2 }, pri: { kyoto: .25, osaka: .35, hyogo: .25, nara: .07, shiga: .05, kinki_other: .03 } },
+  chushi: { kok: { hiroshima: .15, okayama: .1, chushi_other: .75 }, pri: { hiroshima: .3, okayama: .25, chushi_other: .45 } },
+  kyushu: { kok: { fukuoka: .2, kumamoto: .1, nagasaki: .08, kagoshima: .1, okinawa: .1, kyushu_other: .42 }, pri: { fukuoka: .55, kumamoto: .1, nagasaki: .08, kagoshima: .05, okinawa: .05, kyushu_other: .17 } },
+};
+
+function parseCollegeTags(s) {
+  const t = {};
+  for (const w of s.split(/\s+/).filter(Boolean)) { const [k, v] = w.split(":"); t[k] = v ? +v : 1; }
+  return t;
+}
+
+const COLLEGE_CATS = (() => {
+  const cats = COLLEGE_LIST.map(([key, label, short, pref, type, tier, size, sci, tags, t23, tama]) => ({
+    key, label, short, big: label.replace(/（.*）$/, ""),
+    group: (type === "pri" ? "私立" : "国公立") + "（" + COLLEGE_REGION_NAME[COLLEGE_REGION[typeof pref === "string" ? pref : Object.keys(pref)[0]]] + "）",
+    pref: typeof pref === "string" ? { [pref]: 1 } : pref,
+    type, tier, size, sci, tags: parseCollegeTags(tags), t23, tama,
+  }));
+  for (const [reg, kinds] of Object.entries(COLLEGE_OTHER)) {
+    for (const kind of ["kok", "pri"]) {
+      for (const field of ["bun", "ri"]) {
+        const r = COLLEGE_REGION_NAME[reg], k = kind === "kok" ? "国公立" : "私立", f = field === "ri" ? "理系" : "文系";
+        cats.push({
+          key: ["x", reg, kind, field].join("-"),
+          label: r + "の" + k + "大学（" + f + "・一覧にない大学）",
+          short: r + " " + k + " " + f, big: r + "の" + k + "大学", unit: "（" + f + "）",
+          group: "一覧にない大学",
+          other: true, pref: kinds[kind], type: kind === "kok" ? "kok" : "pri",
+          sci: field === "ri" ? .97 : .03,
+          tierA: kind === "kok" ? .35 : .1, tierTop: .02, big15k: kind === "kok" ? .15 : .1, small5k: kind === "kok" ? .5 : .55,
+          tags: kind === "kok"
+            ? { women: .03, med: .3, christ: .01, buddhist: .01, single: .45, lang: .03 }
+            : { women: .12, med: .08, christ: .12, buddhist: .08, single: .35, lang: .05, seisei: reg === "kanto" ? .05 : 0 },
+          t23: reg === "kanto" ? (kind === "kok" ? .35 : .4) : 0,
+          tama: reg === "kanto" ? (kind === "kok" ? .1 : .15) : 0,
+          place: reg === "kanto" && kind === "pri" ? .05 : .01,
+        });
+      }
+    }
+  }
+  return cats;
+})();
+
+// 確率の作り方（u は候補）
+const cSoft = (w, y = .95, n = .03) => n + (y - n) * Math.max(0, Math.min(1, w));
+const cPref = (u, keys) => keys.reduce((s, k) => s + (u.pref[k] || 0), 0);
+const cRegion = (u, regs) => Object.entries(u.pref).reduce((s, [k, w]) => s + (regs.includes(COLLEGE_REGION[k]) ? w : 0), 0);
+const cTag = (u, t, y, n) => cSoft(u.tags[t] || 0, y, n);
+// 場所の質問: 一覧にない大学は区分ごとの小さな値
+const cPlace = (u, t) => (u.other ? u.place : cTag(u, t));
+
+const COLLEGE_QUESTIONS = [
+  // ---- 地域 ----
+  { id: "west", cat: "地域", q: "大学は西日本（近畿・中国・四国・九州・沖縄）にあった？", a: "西日本", b: "東日本（中部より東）", f: u => cSoft(cRegion(u, ["kinki", "chushi", "kyushu"]), .96, .03) },
+  { id: "kanto", cat: "地域", q: "大学は関東地方にあった？", a: "あった", b: "ほかの地方", f: u => cSoft(cRegion(u, ["kanto"]), .96, .03) },
+  { id: "kinki", cat: "地域", q: "大学は近畿地方（京都・大阪・兵庫・奈良・滋賀・和歌山）にあった？", a: "あった", b: "ほかの地方", f: u => cSoft(cRegion(u, ["kinki"]), .96, .03) },
+  { id: "chubu", cat: "地域", q: "大学は中部地方（東海・北陸・甲信越）にあった？", a: "あった", b: "ほかの地方", f: u => cSoft(cRegion(u, ["chubu"]), .96, .03) },
+  { id: "kyushu", cat: "地域", q: "大学は九州・沖縄にあった？", a: "あった", b: "ほかの地方", f: u => cSoft(cRegion(u, ["kyushu"]), .96, .03) },
+  { id: "north", cat: "地域", q: "大学は北海道か東北にあった？", a: "あった", b: "ほかの地方", f: u => cSoft(cRegion(u, ["hokkaido", "tohoku"]), .96, .03) },
+  { id: "hokkaido", cat: "地域", q: "大学は北海道にあった？", a: "北海道", b: "ちがう", f: u => cSoft(cPref(u, ["hokkaido"]), .96, .03) },
+  { id: "chushi", cat: "地域", q: "大学は中国・四国地方にあった？", a: "あった", b: "ほかの地方", f: u => cSoft(cRegion(u, ["chushi"]), .96, .03) },
+  // ---- 都道府県 ----
+  { id: "tokyo", cat: "場所", q: "大学は東京都にあった？", a: "東京都", b: "ちがう", f: u => cSoft(cPref(u, ["tokyo"]), .96, .03) },
+  { id: "t23", cat: "場所", q: "メインのキャンパスは東京23区内だった？", a: "23区内", b: "ちがう", f: u => cSoft(u.t23, .95, .03) },
+  { id: "tama", cat: "場所", q: "キャンパスは東京の多摩地域（八王子・府中・三鷹・小平など23区の外）だった？", a: "多摩地域", b: "ちがう", f: u => cSoft(u.tama, .95, .03) },
+  { id: "kanagawa", cat: "場所", q: "大学は神奈川県にあった？", a: "神奈川県", b: "ちがう", f: u => cSoft(cPref(u, ["kanagawa"]), .95, .03) },
+  { id: "chibasaitama", cat: "場所", q: "大学は千葉県か埼玉県にあった？", a: "千葉か埼玉", b: "ちがう", f: u => cSoft(cPref(u, ["chiba", "saitama"]), .95, .03) },
+  { id: "kitakanto", cat: "場所", q: "大学は茨城・栃木・群馬のどこかにあった？", a: "どこかにあった", b: "ちがう", f: u => cSoft(cPref(u, ["kitakanto"]), .95, .03) },
+  { id: "miyagi", cat: "場所", q: "大学は宮城県にあった？", a: "宮城県", b: "ちがう", f: u => cSoft(cPref(u, ["miyagi"]), .95, .03) },
+  { id: "aichi", cat: "場所", q: "大学は愛知県にあった？", a: "愛知県", b: "ちがう", f: u => cSoft(cPref(u, ["aichi"]), .95, .03) },
+  { id: "hokuriku", cat: "場所", q: "大学は新潟・富山・石川・福井のどこかにあった？", a: "どこかにあった", b: "ちがう", f: u => cSoft(cPref(u, ["niigata", "hokuriku"]), .95, .03) },
+  { id: "niigata", cat: "場所", q: "大学は新潟県にあった？", a: "新潟県", b: "ちがう", f: u => cSoft(cPref(u, ["niigata"]), .95, .03) },
+  { id: "koshin", cat: "場所", q: "大学は長野県か山梨県にあった？", a: "長野か山梨", b: "ちがう", f: u => cSoft(cPref(u, ["koshin"]), .95, .03) },
+  { id: "shizuoka", cat: "場所", q: "大学は静岡県にあった？", a: "静岡県", b: "ちがう", f: u => cSoft(cPref(u, ["shizuoka"]), .95, .03) },
+  { id: "kyoto", cat: "場所", q: "大学は京都府にあった？", a: "京都府", b: "ちがう", f: u => cSoft(cPref(u, ["kyoto"]), .95, .03) },
+  { id: "osaka", cat: "場所", q: "大学は大阪府にあった？", a: "大阪府", b: "ちがう", f: u => cSoft(cPref(u, ["osaka"]), .95, .03) },
+  { id: "hyogo", cat: "場所", q: "大学は兵庫県にあった？", a: "兵庫県", b: "ちがう", f: u => cSoft(cPref(u, ["hyogo"]), .95, .03) },
+  { id: "narashiga", cat: "場所", q: "大学は奈良・滋賀・和歌山のどこかにあった？", a: "どこかにあった", b: "ちがう", f: u => cSoft(cPref(u, ["nara", "shiga", "kinki_other"]), .95, .03) },
+  { id: "hiroshima", cat: "場所", q: "大学は広島県にあった？", a: "広島県", b: "ちがう", f: u => cSoft(cPref(u, ["hiroshima"]), .95, .03) },
+  { id: "okayama", cat: "場所", q: "大学は岡山県にあった？", a: "岡山県", b: "ちがう", f: u => cSoft(cPref(u, ["okayama"]), .95, .03) },
+  { id: "fukuoka", cat: "場所", q: "大学は福岡県にあった？", a: "福岡県", b: "ちがう", f: u => cSoft(cPref(u, ["fukuoka"]), .95, .03) },
+  { id: "kumamoto", cat: "場所", q: "大学は熊本県にあった？", a: "熊本県", b: "ちがう", f: u => cSoft(cPref(u, ["kumamoto"]), .95, .03) },
+  { id: "nagasaki", cat: "場所", q: "大学は長崎県にあった？", a: "長崎県", b: "ちがう", f: u => cSoft(cPref(u, ["nagasaki"]), .95, .03) },
+  { id: "kagoshima", cat: "場所", q: "大学は鹿児島県にあった？", a: "鹿児島県", b: "ちがう", f: u => cSoft(cPref(u, ["kagoshima"]), .95, .03) },
+  { id: "okinawa", cat: "場所", q: "大学は沖縄県にあった？", a: "沖縄県", b: "ちがう", f: u => cSoft(cPref(u, ["okinawa"]), .96, .02) },
+  // ---- 東京の街 ----
+  { id: "ikebukuro", cat: "場所", q: "池袋にあるキャンパスに通った？", a: "通った", b: "ちがう", f: u => cPlace(u, "ikebukuro") },
+  { id: "aoyama", cat: "場所", q: "渋谷・青山のあたりにあるキャンパスに通った？", a: "通った", b: "ちがう", f: u => cPlace(u, "aoyama") },
+  { id: "kanda", cat: "場所", q: "お茶の水・神田・神保町のあたりにあるキャンパスに通った？", a: "通った", b: "ちがう", f: u => cPlace(u, "kanda") },
+  { id: "ichigaya", cat: "場所", q: "市ヶ谷・飯田橋・神楽坂のあたりにあるキャンパスに通った？", a: "通った", b: "ちがう", f: u => cPlace(u, "ichigaya") },
+  { id: "mejiro", cat: "場所", q: "目白にあるキャンパスに通った？", a: "通った", b: "ちがう", f: u => cPlace(u, "mejiro") },
+  { id: "setagaya", cat: "場所", q: "世田谷区にあるキャンパスに通った？", a: "通った", b: "ちがう", f: u => cPlace(u, "setagaya") },
+  // ---- 大学の種類 ----
+  { id: "national", cat: "種類", q: "国立大学だった？", a: "国立", b: "ちがう", f: u => ({ nat: .96, pub: .05, kok: .75, pri: .02 })[u.type] },
+  { id: "kokkoritsu", cat: "種類", q: "国公立大学（国立・県立・市立など）だった？", a: "国公立", b: "私立", f: u => (u.type === "pri" ? .02 : .97) },
+  { id: "women", cat: "種類", q: "女子大だった？", a: "女子大", b: "共学", f: u => cTag(u, "women", .97, .02) },
+  { id: "med", cat: "種類", q: "大学に医学部があった？", a: "あった", b: "なかった", f: u => cTag(u, "med", .95, .04) },
+  { id: "christ", cat: "種類", q: "キリスト教系の大学（チャペルや礼拝の時間がある）だった？", a: "そう", b: "ちがう", f: u => cTag(u, "christ", .95, .03) },
+  { id: "buddhist", cat: "種類", q: "仏教系の大学だった？", a: "そう", b: "ちがう", f: u => cTag(u, "buddhist", .93, .03) },
+  { id: "single", cat: "種類", q: "大学には、文系か理系の片方の学部しかなかった？", a: "片方だけ", b: "両方あった", f: u => cTag(u, "single", .85, .1) },
+  { id: "lang", cat: "種類", q: "外国語を学ぶ学部が中心の大学だった？", a: "そう", b: "ちがう", f: u => cTag(u, "lang", .93, .03) },
+  { id: "science", cat: "種類", q: "あなたは理系の学部だった？（医・薬・看護・農・工なども理系として）", a: "理系", b: "文系", f: u => Math.max(.03, Math.min(.97, u.sci)) },
+  // ---- 難しさ・規模 ----
+  { id: "tier_a", cat: "規模", q: "入試の難しさは高い方だった？（目安は偏差値60以上）", a: "高い方", b: "そうでもない", f: u => (u.other ? u.tierA : [.95, .88, .6, .2, .06][u.tier - 1]) },
+  { id: "tier_top", cat: "規模", q: "日本でもトップクラスの難関大学だった？（旧帝大・早慶レベル）", a: "そう", b: "ちがう", f: u => (u.other ? u.tierTop : [.92, .3, .06, .03, .02][u.tier - 1]) },
+  { id: "big", cat: "規模", q: "学生数がかなり多い大学だった？（全体で1万5千人以上くらい）", a: "多かった", b: "そうでもない", f: u => (u.other ? u.big15k : { L: .85, M: .2, S: .03 }[u.size]) },
+  { id: "small", cat: "規模", q: "小さな大学だった？（全体で5千人未満くらい）", a: "小さかった", b: "そうでもない", f: u => (u.other ? u.small5k : { L: .02, M: .15, S: .85 }[u.size]) },
+  { id: "huge", cat: "規模", q: "学生数が日本一クラスのマンモス大学（7万人前後）だった？", a: "そう", b: "ちがう", f: u => cTag(u, "huge", .9, .02) },
+  // ---- グループ ----
+  { id: "kyutei", cat: "グループ", q: "いわゆる旧帝大（東大・京大・阪大・東北大・名大・九大・北大）だった？", a: "そう", b: "ちがう", f: u => cTag(u, "kyutei", .97, .01) },
+  { id: "march", cat: "グループ", q: "MARCH（明治・青山学院・立教・中央・法政）のどれかだった？", a: "そう", b: "ちがう", f: u => cTag(u, "march", .96, .01) },
+  { id: "kankandoritsu", cat: "グループ", q: "関関同立（関西・関西学院・同志社・立命館）のどれかだった？", a: "そう", b: "ちがう", f: u => cTag(u, "kankandoritsu", .96, .01) },
+  { id: "nittokomasen", cat: "グループ", q: "日東駒専（日本・東洋・駒澤・専修）のどれかだった？", a: "そう", b: "ちがう", f: u => cTag(u, "nittokomasen", .96, .01) },
+  { id: "sankinkoryu", cat: "グループ", q: "産近甲龍（京都産業・近畿・甲南・龍谷）のどれかだった？", a: "そう", b: "ちがう", f: u => cTag(u, "sankinkoryu", .96, .01) },
+  { id: "seisei", cat: "グループ", q: "成成明学獨國武（成蹊・成城・明治学院・獨協・國學院・武蔵）のどれかだった？", a: "そう", b: "ちがう", f: u => cTag(u, "seisei", .95, .01) },
+  { id: "kinokasen", cat: "グループ", q: "いわゆる「金岡千広」（金沢・岡山・千葉・広島）のどれかだった？", a: "そう", b: "ちがう", f: u => cTag(u, "kinokasen", .95, .01) },
+  // ---- 決め手 ----
+  { id: "sokei", cat: "決め手", q: "早慶戦（慶早戦）が、大学の一大イベントだった？", a: "そう", b: "ちがう", f: u => cTag(u, "sokei", .95, .02) },
+  { id: "waseda", cat: "決め手", q: "式典などで、校歌『都の西北』を歌った？", a: "歌った", b: "ちがう", f: u => cTag(u, "waseda", .96, .01) },
+  { id: "keio", cat: "決め手", q: "応援歌『若き血』を歌った？", a: "歌った", b: "ちがう", f: u => cTag(u, "keio", .96, .01) },
+  { id: "todai", cat: "決め手", q: "キャンパスに赤門や安田講堂があった？", a: "あった", b: "ちがう", f: u => cTag(u, "todai", .96, .01) },
+  { id: "kyodai", cat: "決め手", q: "キャンパスは京都の吉田（百万遍・銀閣寺の近く）だった？", a: "そう", b: "ちがう", f: u => cTag(u, "kyodai", .95, .01) },
+];
+
+const GAME_COLLEGE = {
+  id: "college", kind: "cat", tab: "大学", name: "大学あて",
+  eyebrow: "2択に答えるだけ",
+  headline: 'あなたの<br><span class="hl">出身大学</span>、<br>当てます。',
+  lede: "キャンパスの場所や大学の特徴についての質問から、出身大学をしぼりこみます。一覧にない大学は「地域・国公立か私立か・文系か理系か」まで当てます。",
+  factCats: [String(COLLEGE_LIST.length), "校＋一覧にない大学（地域×国公私立×文理）"],
+  mapTitle: "候補の大学（上位）", layout: "ranking", revealEyebrow: "あなたの大学は…",
+  pickLabel: "本当の大学（一覧にない大学は一番下）",
+  cats: COLLEGE_CATS,
+  ordered: false, maxQ: 22, guessTop: 0.7,
+  questions: COLLEGE_QUESTIONS,
+  priorP: (q, c) => q.f(c),
+  store: "game", seed: null, histKey: "guess-my-year-recent-college",
+};
+</script>
+<script>
 // ===== 当てます: 判定エンジン（どのタブも共通。makeEngine にゲームの定義 def を渡す） =====
 // def.cats      候補 [{ key, label, short }]
 // def.questions 質問 [{ id, cat, q, a, b, ... }]
@@ -989,6 +1263,9 @@ const ANSWER_COUNT = { a: [1, 0], b: [0, 1], pa: [0.5, 0], pb: [0, 0.5] };   // 
 
 // 出題のばらつき
 const RECENT_WEIGHT = 0.85;   // 直近のゲームで出た質問の情報量を最大85%引き
+// ただし、ばらつきのために避けた質問が、選べる質問より飛び抜けて情報量が多いときはそちらを出す
+// （文系か理系かのように、最後の2択を分ける決め手が1つしかない場合に、前回出たせいで出なくなるのを防ぐ）
+const DECISIVE_GAIN = 0.3, DECISIVE_RATIO = 0.5;
 const SAME_CAT_WEIGHT = 0.6;  // 直前と同じ分野は情報量を4割引き
 const POOL_RATIO = 0.7;       // 最良の7割以上の情報量がある質問を候補にする
 const POOL_MAX = 8, FIRST_POOL = 20;
@@ -1073,6 +1350,8 @@ function makeEngine(def) {
     const best = scored[0][0];
     const pool = asked.size === 0 ? scored.slice(0, FIRST_POOL)
       : scored.filter(s => s[0] >= best * POOL_RATIO).slice(0, POOL_MAX);
+    const raw = scored.reduce((m, s) => (s[2] > m[2] ? s : m));
+    if (raw[2] >= DECISIVE_GAIN && Math.max(...pool.map(s => s[2])) < raw[2] * DECISIVE_RATIO) return { qi: raw[1], gain: raw[2] };
     const total = pool.reduce((t, s) => t + s[0], 0);
     let r = rand() * total;
     for (const s of pool) { r -= s[0]; if (r <= 0) return { qi: s[1], gain: s[2] }; }
@@ -1222,7 +1501,7 @@ const UmareStore = (() => {
 (() => {
   const $ = id => document.getElementById(id);
   const BASE_URL = "https://nattom666.github.io/guess-my-year/";
-  const GAMES = [GAME_YEAR, GAME_CLUB];
+  const GAMES = [GAME_YEAR, GAME_CLUB, GAME_COLLEGE];
   const num = v => (typeof v === "number" && isFinite(v) && v >= 0 ? Math.min(v, 1e6) : 0);
   const shareUrl = def => (def.id === GAMES[0].id ? BASE_URL : BASE_URL + "#" + def.id);
 
@@ -1340,6 +1619,8 @@ const UmareStore = (() => {
         }
       }
       cells = def.cats.map(c => byKey[c.key]);
+    } else if (def.layout === "ranking") {
+      // 候補が多いタブは、全部を並べず確率の高い順に上位だけ出す（paint のたびに作り直す）
     } else {
       for (const c of def.cats) {
         const el = document.createElement("div");
@@ -1348,7 +1629,8 @@ const UmareStore = (() => {
       }
     }
     $("mapTitle").textContent = def.mapTitle;
-    $("map").setAttribute("aria-label", def.mapTitle + "（濃いほど有力）");
+    $("mapHint").textContent = def.layout === "ranking" ? "確率の高い順" : "濃いほど有力";
+    $("map").setAttribute("aria-label", def.mapTitle + "（" + $("mapHint").textContent + "）");
   }
 
   // opts: { top, range: [lo, hi], truth }（どれも候補の番号）
@@ -1356,6 +1638,7 @@ const UmareStore = (() => {
     opts = opts || {};
     const mx = Math.max(...pi);
     if (mx - Math.min(...pi) < 1e-9 * mx) return paintIdle();   // まだ何も絞れていない
+    if (tab.def.layout === "ranking") return paintRanking(pi, opts);
     pi.forEach((v, i) => {
       const c = cells[i], a = Math.pow(v / mx, 0.8);
       c.style.setProperty("--a", a.toFixed(3));
@@ -1367,7 +1650,32 @@ const UmareStore = (() => {
   }
   // どの候補も同じ濃さで並べる
   function paintIdle() {
+    if (tab.def.layout === "ranking") {
+      const g = $("grid"); g.innerHTML = "";
+      const m = document.createElement("p"); m.className = "rank-idle";
+      m.textContent = "答えるほど、ここに候補がしぼられていきます（全" + tab.def.cats.length + "候補）";
+      g.appendChild(m);
+      return;
+    }
     for (const c of cells) { c.style.setProperty("--a", "0.18"); c.classList.remove("lit", "top", "range", "truth"); }
+  }
+
+  const RANK_N = 6;
+  function paintRanking(pi, opts) {
+    const g = $("grid"), mx = Math.max(...pi), def = tab.def;
+    const order = pi.map((v, i) => i).sort((a, b) => pi[b] - pi[a]).slice(0, RANK_N);
+    if (opts.truth != null && !order.includes(opts.truth)) order.push(opts.truth);
+    g.innerHTML = "";
+    for (const i of order) {
+      const row = document.createElement("div");
+      row.className = "rank-row" + (opts.top === i ? " top" : "") + (opts.truth === i ? " truth" : "");
+      const name = document.createElement("span"); name.className = "rank-name"; name.textContent = def.cats[i].short; name.title = def.cats[i].label;
+      const bar = document.createElement("span"); bar.className = "rank-bar";
+      const fill = document.createElement("i"); fill.style.width = (100 * pi[i] / mx).toFixed(1) + "%"; bar.appendChild(fill);
+      const pct = document.createElement("span"); pct.className = "rank-pct"; pct.textContent = Math.round(100 * pi[i]) + "%";
+      row.append(name, bar, pct);
+      g.appendChild(row);
+    }
   }
 
   function setMeter(pi) {
@@ -1403,7 +1711,15 @@ const UmareStore = (() => {
     const sel = $("catInput"); sel.innerHTML = "";
     if (def.kind === "cat") {
       $("catLabel").textContent = def.pickLabel;
-      def.cats.forEach((c, i) => sel.add(new Option(c.label, String(i))));
+      const groups = {};
+      def.cats.forEach((c, i) => {
+        let parent = sel;
+        if (c.group) {
+          parent = groups[c.group];
+          if (!parent) { parent = groups[c.group] = document.createElement("optgroup"); parent.label = c.group; sel.appendChild(parent); }
+        }
+        parent.appendChild(new Option(c.label, String(i)));
+      });
     }
     $("pickYear").hidden = def.kind !== "year";
     $("pickCat").hidden = def.kind !== "cat";
@@ -1510,7 +1826,7 @@ const UmareStore = (() => {
       game.range = null;
       const second = game.pi.map((v, k) => [v, k]).sort((a, b) => b[0] - a[0])[1][1];
       main.className = "name"; main.textContent = def.cats[i].big || def.cats[i].label;
-      $("rUnit").textContent = "";
+      $("rUnit").textContent = def.cats[i].unit || "";
       $("rSub").textContent = "";
       $("rNote").textContent = "次に近いのは " + def.cats[second].label;
       $("catInput").value = String(i);
