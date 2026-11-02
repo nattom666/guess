@@ -188,8 +188,11 @@ h1 .hl { color: var(--accent); }
 }
 .verdict { margin: 0; font-weight: 800; font-size: 26px; line-height: 1.35; }
 .verdict.hit { color: var(--accent); }
-.share { background: var(--bg); border-radius: var(--r-md); padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
-.share p { margin: 0; font-size: 14px; white-space: pre-line; overflow-wrap: anywhere; user-select: all; -webkit-user-select: all; }
+.share { display: flex; flex-direction: column; gap: 10px; }
+.share p {
+  margin: 0; background: var(--bg); border-radius: var(--r-md); padding: 12px 14px;
+  font-size: 14px; white-space: pre-line; overflow-wrap: anywhere; user-select: all; -webkit-user-select: all;
+}
 .hist-box { gap: 0; }
 .hist-box summary { cursor: pointer; font-weight: 700; font-size: 14px; }
 .hist { margin: 12px 0 0; padding-left: 1.3em; display: flex; flex-direction: column; gap: 8px; font-size: 13.5px; }
@@ -319,6 +322,10 @@ h1 .hl { color: var(--accent); }
     <div class="card" id="after" hidden>
       <p class="verdict" id="vText"></p>
       <p class="note" id="vLearn"></p>
+      <button class="cta" id="again" type="button">もう一回</button>
+    </div>
+
+    <div class="card share-card">
       <div class="share">
         <p id="shareText"></p>
         <button class="btn2 share-main" id="share" type="button">
@@ -327,7 +334,6 @@ h1 .hl { color: var(--accent); }
         </button>
         <button class="btn2" id="copy" type="button">結果をコピー</button>
       </div>
-      <button class="cta" id="again" type="button">もう一回</button>
     </div>
 
     <details class="card hist-box" id="histBox">
@@ -1218,11 +1224,25 @@ const UmareStore = (() => {
     $("rRange").textContent = range[0] === range[1] ? "かなり自信あり" : "だいたい " + range[0] + "〜" + range[1] + "年のどこか";
     $("check").hidden = false; $("pick").hidden = true; $("after").hidden = true;
     $("yearInput").value = y; syncWareki();
+    setShare("生まれ年あて：" + game.log.length + "問で予想されました！");
     renderHist();
     paint(game.pi, { showTop: true, range }); setMeter(game.pi);
     const r = $("reveal"); r.classList.remove("fade"); void r.offsetWidth; r.classList.add("fade");
     show("r");
     window.scrollTo({ top: 0 });
+  }
+
+  // 共有・コピーする文。結果画面に出た時点と、答え合わせの後で差し替える
+  // 年齢が分かってしまうので、予想した年・本当の年は文に入れない（ずれの年数だけ）
+  function setShare(msg) {
+    game.shareMsg = msg;
+    const enc = encodeURIComponent, full = msg + "\n" + SHARE_URL;
+    $("shareText").textContent = full;
+    $("copy").textContent = "結果をコピー";
+    $("shX").href = "https://twitter.com/intent/tweet?text=" + enc(msg) + "&url=" + enc(SHARE_URL);
+    $("shLine").href = "https://line.me/R/share?text=" + enc(full);
+    $("shFb").href = "https://www.facebook.com/sharer/sharer.php?u=" + enc(SHARE_URL);
+    $("shMail").href = "mailto:?subject=" + enc("生まれ年あて") + "&body=" + enc(full);
   }
 
   function renderHist() {
@@ -1252,15 +1272,7 @@ const UmareStore = (() => {
     const vt = $("vText");
     vt.classList.toggle("hit", d === 0);
     vt.textContent = d === 0 ? "ピタリ！" : d === 1 ? "おしい！ 1年ずれ" : d + "年ずれ。くやしい…";
-    const msg = "生まれ年あて：" + n + "問で「" + game.guess + "年生まれ」と予想され、" +
-      (d === 0 ? "ズバリ当てられた！" : "正解は" + truth + "年（" + d + "年ずれ）でした。");
-    game.shareMsg = msg;
-    $("shareText").textContent = msg + "\n" + SHARE_URL;
-    const enc = encodeURIComponent, full = msg + "\n" + SHARE_URL;
-    $("shX").href = "https://twitter.com/intent/tweet?text=" + enc(msg) + "&url=" + enc(SHARE_URL);
-    $("shLine").href = "https://line.me/R/share?text=" + enc(full);
-    $("shFb").href = "https://www.facebook.com/sharer/sharer.php?u=" + enc(SHARE_URL);
-    $("shMail").href = "mailto:?subject=" + enc("生まれ年あて") + "&body=" + enc(full);
+    setShare("生まれ年あて：" + n + "問で" + (d === 0 ? "ズバリ当てられた！" : "予想され、" + d + "年ずれでした。"));
     if (truth >= Y0 && truth <= Y1) paint(game.pi, { showTop: true, range: game.range, truth });
     $("vLearn").textContent = "保存中…";
     $("vLearn").textContent = await record(game, truth, game.guess);
