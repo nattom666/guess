@@ -317,7 +317,6 @@ h1 .hl { color: var(--accent); }
 
   <footer class="foot">
     <span id="status"><span class="dot"></span>学習データを読みこみ中…</span>
-    <span id="acc"></span>
   </footer>
 </div>
 
@@ -992,16 +991,17 @@ const UmareStore = (() => {
 
   // ---------- 学習データ ----------
   // stats = { counts: {質問id: {年: [A, B]}}, yearCounts: {年: 回数}, games, exact, near }
+  // 的中率（exact・near）は画面に出さない。集計は Supabase の play_stats にだけ残す
   let model = buildModel({}, {});
   let storeReady = false, canWrite = true, loaded = false, writing = false;
-  let totals = { games: 0, exact: 0, near: 0 };
+  let totals = { games: 0 };
   const num = v => (typeof v === "number" && isFinite(v) && v >= 0 ? Math.min(v, 1e6) : 0);
 
   function mergeStats(list) {
-    const counts = {}, yearCounts = {}, t = { games: 0, exact: 0, near: 0 };
+    const counts = {}, yearCounts = {}, t = { games: 0 };
     for (const s of list) {
       if (!s || typeof s !== "object") continue;
-      t.games += num(s.games); t.exact += num(s.exact); t.near += num(s.near);
+      t.games += num(s.games);
       for (const [y, n] of Object.entries(s.yearCounts || {})) yearCounts[y] = (yearCounts[y] || 0) + num(n);
       for (const [qid, byYear] of Object.entries(s.counts || {})) {
         if (!byYear || typeof byYear !== "object") continue;
@@ -1029,9 +1029,6 @@ const UmareStore = (() => {
   }
   function renderStats() {
     $("factGames").textContent = totals.games;
-    if (totals.games > 0) {
-      $("acc").textContent = "ピタリ " + Math.round(100 * totals.exact / totals.games) + "%・前後1年以内 " + Math.round(100 * totals.near / totals.games) + "%";
-    } else $("acc").textContent = "";
     if (!storeReady) return;
     if (!loaded) return;
     setStatus(totals.games > 0 ? "みんなの答え合わせ " + totals.games + "回で学習中" : "まだ答え合わせはありません。最初の1回をどうぞ", true);
