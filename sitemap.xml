@@ -1,8 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 1ページだけのサイト。ドメイン直下のサイトマップインデックス（apps/pages_root）から束ねている。 -->
+<!-- build.py が作る。ドメイン直下のサイトマップインデックス（apps/pages_root）から束ねている。 -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
   <loc>https://nattom666.github.io/guess/</loc>
-  <changefreq>monthly</changefreq>
+  <lastmod>2026-11-03</lastmod>
+  <changefreq>weekly</changefreq>
+</url>
+<url>
+  <loc>https://nattom666.github.io/guess/club/</loc>
+  <lastmod>2026-11-03</lastmod>
+  <changefreq>weekly</changefreq>
+</url>
+<url>
+  <loc>https://nattom666.github.io/guess/college/</loc>
+  <lastmod>2026-11-03</lastmod>
+  <changefreq>weekly</changefreq>
+</url>
+<url>
+  <loc>https://nattom666.github.io/guess/baito/</loc>
+  <lastmod>2026-11-03</lastmod>
+  <changefreq>weekly</changefreq>
 </url>
 </urlset>
