@@ -16,7 +16,7 @@
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<script type="application/ld+json">[{"@context": "https://schema.org", "@type": "WebApplication", "name": "大学当て｜当てます", "url": "https://nattom666.github.io/guess/college/", "description": "キャンパスの場所や大学の特徴、MARCH・関関同立・日東駒専などの大学群についての2択に答えるだけで、出身大学を当てる無料の診断ゲーム。全国200校に対応し、一覧にない大学も地域・国公私立・文理まで当てます。", "applicationCategory": "GameApplication", "operatingSystem": "Web", "inLanguage": "ja", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "JPY"}}, {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "どの大学に対応していますか？", "acceptedAnswer": {"@type": "Answer", "text": "旧帝大・早慶上智・MARCH・関関同立・日東駒専・産近甲龍・大東亜帝国・女子大など全国200校です。一覧にない大学は「関東の私立大学（理系）」のように地域・国公立か私立か・文系か理系かまで当てます。"}}, {"@type": "Question", "name": "何問くらいで当たりますか？", "acceptedAnswer": {"@type": "Answer", "text": "大体10〜22問です。"}}, {"@type": "Question", "name": "大学群（MARCHなど）の質問はどう答えればいい？", "acceptedAnswer": {"@type": "Answer", "text": "自分の大学が含まれていれば「そう」、含まれていなければ「違う」を選んでください。分からなければ「分からない」で大丈夫です。"}}, {"@type": "Question", "name": "無料ですか？ 登録は必要ですか？", "acceptedAnswer": {"@type": "Answer", "text": "無料で、登録も要りません。スマホでもパソコンでも遊べます。"}}, {"@type": "Question", "name": "答えた内容はどうなりますか？", "acceptedAnswer": {"@type": "Answer", "text": "名前などの個人情報は集めていません。答え合わせの結果だけを匿名で集計して、判定を賢くするために使います。"}}]}]</script>
+<script type="application/ld+json">[{"@context": "https://schema.org", "@type": "WebApplication", "name": "大学当て｜当てます", "url": "https://nattom666.github.io/guess/college/", "description": "キャンパスの場所や大学の特徴、MARCH・関関同立・日東駒専などの大学群についての2択に答えるだけで、出身大学を当てる無料の診断ゲーム。全国200校に対応し、一覧にない大学も地域・国公私立・文理まで当てます。", "applicationCategory": "GameApplication", "operatingSystem": "Web", "inLanguage": "ja", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "JPY"}}, {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "どの大学に対応していますか？", "acceptedAnswer": {"@type": "Answer", "text": "旧帝大・早慶上智・MARCH・関関同立・日東駒専・産近甲龍・大東亜帝国・女子大など全国200校です。一覧にない大学は「関東の私立大学（理系）」のように地域・国公立か私立か・文系か理系かまで当てます。"}}, {"@type": "Question", "name": "何問くらいで当たりますか？", "acceptedAnswer": {"@type": "Answer", "text": "大体15〜25問です。大学が1つに絞れるまで質問します。"}}, {"@type": "Question", "name": "大学群（MARCHなど）の質問はどう答えればいい？", "acceptedAnswer": {"@type": "Answer", "text": "自分の大学が含まれていれば「そう」、含まれていなければ「違う」を選んでください。分からなければ「分からない」で大丈夫です。"}}, {"@type": "Question", "name": "無料ですか？ 登録は必要ですか？", "acceptedAnswer": {"@type": "Answer", "text": "無料で、登録も要りません。スマホでもパソコンでも遊べます。"}}, {"@type": "Question", "name": "答えた内容はどうなりますか？", "acceptedAnswer": {"@type": "Answer", "text": "名前などの個人情報は集めていません。答え合わせの結果だけを匿名で集計して、判定を賢くするために使います。"}}]}]</script>
 <!-- Google アナリティクス（GA4）。nattom666.github.io 配下の全ページで共通の測定ID -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-TD0R5G5M0F"></script>
 <script>
@@ -346,11 +346,11 @@ h1 .hl { color: var(--accent); }
     <p class="lede" id="tLede">キャンパスの場所や大学の特徴、大学群についての質問から、出身大学を絞り込みます。一覧にない大学は「地域・国公立か私立か・文系か理系か」まで当てます。</p>
     <button class="cta" id="start" type="button">始める</button>
     <ul class="facts">
-      <li><b id="qtotal">104</b><span>問からランダムに出題</span></li>
+      <li><b id="qtotal">109</b><span>問からランダムに出題</span></li>
       <li><b id="factCats">200</b><span id="factCatsLabel">校＋一覧にない大学（地域×国公私立×文理）</span></li>
       <li><b id="factGames">0</b><span>回の答え合わせで学習</span></li>
     </ul>
-    <div id="about"><section class="about"><h2>遊び方</h2><ol><li>「始める」を押して、2択の質問に答えます（「多分」「分からない」もOK）。</li><li>絞り込めたら、大学当ての予想が出ます。</li><li>当たっていたかどうかを教えてもらうと、答えが学習されて、次の人の判定が賢くなります。</li></ol><h2>当てられる大学（200種類）</h2><h3>国公立（北海道）</h3><ul class="cats"><li>北海道大学</li><li>小樽商科大学</li><li>札幌医科大学</li></ul><h3>私立（北海道）</h3><ul class="cats"><li>北海学園大学</li></ul><h3>国公立（東北）</h3><ul class="cats"><li>東北大学</li><li>弘前大学</li><li>岩手大学</li><li>秋田大学</li><li>山形大学</li><li>福島大学</li><li>国際教養大学</li><li>会津大学</li><li>宮城大学</li></ul><h3>私立（東北）</h3><ul class="cats"><li>東北学院大学</li><li>東北福祉大学</li></ul><h3>国公立（関東）</h3><ul class="cats"><li>東京大学</li><li>東京科学大学</li><li>一橋大学</li><li>筑波大学</li><li>千葉大学</li><li>横浜国立大学</li><li>東京外国語大学</li><li>お茶の水女子大学</li><li>東京藝術大学</li><li>東京農工大学</li><li>電気通信大学</li><li>東京海洋大学</li><li>東京学芸大学</li><li>埼玉大学</li><li>茨城大学</li><li>宇都宮大学</li><li>群馬大学</li><li>東京都立大学</li><li>横浜市立大学</li><li>高崎経済大学</li></ul><h3>私立（関東）</h3><ul class="cats"><li>早稲田大学</li><li>慶應義塾大学</li><li>上智大学</li><li>国際基督教大学</li><li>東京理科大学</li><li>明治大学</li><li>青山学院大学</li><li>立教大学</li><li>中央大学</li><li>法政大学</li><li>学習院大学</li><li>日本大学</li><li>東洋大学</li><li>駒澤大学</li><li>専修大学</li><li>成蹊大学</li><li>成城大学</li><li>明治学院大学</li><li>獨協大学</li><li>國學院大學</li><li>武蔵大学</li><li>大東文化大学</li><li>東海大学</li><li>亜細亜大学</li><li>帝京大学</li><li>国士舘大学</li><li>拓殖大学</li><li>玉川大学</li><li>産業能率大学</li><li>大正大学</li><li>文教大学</li><li>東京経済大学</li><li>立正大学</li><li>二松学舍大学</li><li>武蔵野大学</li><li>関東学院大学</li><li>上武大学</li><li>流通経済大学</li><li>江戸川大学</li><li>桜美林大学</li><li>芝浦工業大学</li><li>東京電機大学</li><li>東京都市大学</li><li>工学院大学</li><li>千葉工業大学</li><li>東京農業大学</li><li>神奈川大学</li><li>日本体育大学</li><li>順天堂大学</li><li>東京慈恵会医科大学</li><li>日本医科大学</li><li>昭和大学</li><li>東邦大学</li><li>北里大学</li><li>杏林大学</li><li>津田塾大学</li><li>東京女子大学</li><li>日本女子大学</li><li>聖心女子大学</li><li>共立女子大学</li><li>昭和女子大学</li><li>大妻女子大学</li><li>実践女子大学</li><li>白百合女子大学</li><li>清泉女子大学</li><li>女子美術大学</li><li>跡見学園女子大学</li><li>フェリス女学院大学</li><li>東洋英和女学院大学</li></ul><h3>国公立（中部）</h3><ul class="cats"><li>名古屋大学</li><li>名古屋工業大学</li><li>愛知教育大学</li><li>金沢大学</li><li>新潟大学</li><li>富山大学</li><li>福井大学</li><li>信州大学</li><li>山梨大学</li><li>静岡大学</li><li>岐阜大学</li><li>三重大学</li><li>名古屋市立大学</li><li>愛知県立大学</li><li>静岡県立大学</li><li>都留文科大学</li></ul><h3>私立（中部）</h3><ul class="cats"><li>南山大学</li><li>名城大学</li><li>愛知大学</li><li>中京大学</li><li>愛知学院大学</li><li>中部大学</li><li>名古屋外国語大学</li><li>金城学院大学</li><li>椙山女学園大学</li><li>金沢工業大学</li></ul><h3>国公立（近畿）</h3><ul class="cats"><li>京都大学</li><li>大阪大学</li><li>神戸大学</li><li>京都工芸繊維大学</li><li>奈良女子大学</li><li>滋賀大学</li><li>大阪教育大学</li><li>和歌山大学</li><li>大阪公立大学</li><li>京都府立大学</li><li>京都府立医科大学</li><li>兵庫県立大学</li><li>神戸市外国語大学</li></ul><h3>私立（近畿）</h3><ul class="cats"><li>同志社大学</li><li>立命館大学</li><li>関西大学</li><li>関西学院大学</li><li>京都産業大学</li><li>近畿大学</li><li>甲南大学</li><li>龍谷大学</li><li>摂南大学</li><li>神戸学院大学</li><li>追手門学院大学</li><li>桃山学院大学</li><li>京都外国語大学</li><li>関西外国語大学</li><li>大阪経済大学</li><li>大阪工業大学</li><li>佛教大学</li><li>天理大学</li><li>京都女子大学</li><li>同志社女子大学</li><li>京都光華女子大学</li><li>京都ノートルダム女子大学</li><li>武庫川女子大学</li><li>神戸女学院大学</li><li>甲南女子大学</li><li>神戸女子大学</li><li>大阪樟蔭女子大学</li></ul><h3>国公立（中国・四国）</h3><ul class="cats"><li>広島大学</li><li>岡山大学</li><li>鳥取大学</li><li>島根大学</li><li>山口大学</li><li>徳島大学</li><li>香川大学</li><li>愛媛大学</li><li>高知大学</li><li>県立広島大学</li></ul><h3>私立（中国・四国）</h3><ul class="cats"><li>広島修道大学</li><li>岡山理科大学</li><li>ノートルダム清心女子大学</li><li>松山大学</li></ul><h3>国公立（九州・沖縄）</h3><ul class="cats"><li>九州大学</li><li>九州工業大学</li><li>熊本大学</li><li>長崎大学</li><li>鹿児島大学</li><li>佐賀大学</li><li>大分大学</li><li>宮崎大学</li><li>琉球大学</li><li>北九州市立大学</li><li>福岡女子大学</li></ul><h3>私立（九州・沖縄）</h3><ul class="cats"><li>福岡大学</li><li>西南学院大学</li><li>久留米大学</li><li>九州産業大学</li><li>立命館アジア太平洋大学</li></ul><h2>よくある質問</h2><dl class="faq"><dt>どの大学に対応していますか？</dt><dd>旧帝大・早慶上智・MARCH・関関同立・日東駒専・産近甲龍・大東亜帝国・女子大など全国200校です。一覧にない大学は「関東の私立大学（理系）」のように地域・国公立か私立か・文系か理系かまで当てます。</dd><dt>何問くらいで当たりますか？</dt><dd>大体10〜22問です。</dd><dt>大学群（MARCHなど）の質問はどう答えればいい？</dt><dd>自分の大学が含まれていれば「そう」、含まれていなければ「違う」を選んでください。分からなければ「分からない」で大丈夫です。</dd><dt>無料ですか？ 登録は必要ですか？</dt><dd>無料で、登録も要りません。スマホでもパソコンでも遊べます。</dd><dt>答えた内容はどうなりますか？</dt><dd>名前などの個人情報は集めていません。答え合わせの結果だけを匿名で集計して、判定を賢くするために使います。</dd></dl><h2>他の「当てます」</h2><ul class="others"><li><a href="../">生まれ年当て</a>（年齢・何年生まれかを2択の質問で当てるアキネーター風の診断ゲーム）</li><li><a href="../club/">部活当て</a>（中学時代の部活を2択の質問で当てるアキネーター風の診断ゲーム）</li><li><a href="../baito/">バイト当て</a>（大学時代のアルバイトを2択の質問で当てるアキネーター風の診断ゲーム）</li></ul></section></div>
+    <div id="about"><section class="about"><h2>遊び方</h2><ol><li>「始める」を押して、2択の質問に答えます（「多分」「分からない」もOK）。</li><li>絞り込めたら、大学当ての予想が出ます。</li><li>当たっていたかどうかを教えてもらうと、答えが学習されて、次の人の判定が賢くなります。</li></ol><h2>当てられる大学（200種類）</h2><h3>国公立（北海道）</h3><ul class="cats"><li>北海道大学</li><li>小樽商科大学</li><li>札幌医科大学</li></ul><h3>私立（北海道）</h3><ul class="cats"><li>北海学園大学</li></ul><h3>国公立（東北）</h3><ul class="cats"><li>東北大学</li><li>弘前大学</li><li>岩手大学</li><li>秋田大学</li><li>山形大学</li><li>福島大学</li><li>国際教養大学</li><li>会津大学</li><li>宮城大学</li></ul><h3>私立（東北）</h3><ul class="cats"><li>東北学院大学</li><li>東北福祉大学</li></ul><h3>国公立（関東）</h3><ul class="cats"><li>東京大学</li><li>東京科学大学</li><li>一橋大学</li><li>筑波大学</li><li>千葉大学</li><li>横浜国立大学</li><li>東京外国語大学</li><li>お茶の水女子大学</li><li>東京藝術大学</li><li>東京農工大学</li><li>電気通信大学</li><li>東京海洋大学</li><li>東京学芸大学</li><li>埼玉大学</li><li>茨城大学</li><li>宇都宮大学</li><li>群馬大学</li><li>東京都立大学</li><li>横浜市立大学</li><li>高崎経済大学</li></ul><h3>私立（関東）</h3><ul class="cats"><li>早稲田大学</li><li>慶應義塾大学</li><li>上智大学</li><li>国際基督教大学</li><li>東京理科大学</li><li>明治大学</li><li>青山学院大学</li><li>立教大学</li><li>中央大学</li><li>法政大学</li><li>学習院大学</li><li>日本大学</li><li>東洋大学</li><li>駒澤大学</li><li>専修大学</li><li>成蹊大学</li><li>成城大学</li><li>明治学院大学</li><li>獨協大学</li><li>國學院大學</li><li>武蔵大学</li><li>大東文化大学</li><li>東海大学</li><li>亜細亜大学</li><li>帝京大学</li><li>国士舘大学</li><li>拓殖大学</li><li>玉川大学</li><li>産業能率大学</li><li>大正大学</li><li>文教大学</li><li>東京経済大学</li><li>立正大学</li><li>二松学舍大学</li><li>武蔵野大学</li><li>関東学院大学</li><li>上武大学</li><li>流通経済大学</li><li>江戸川大学</li><li>桜美林大学</li><li>芝浦工業大学</li><li>東京電機大学</li><li>東京都市大学</li><li>工学院大学</li><li>千葉工業大学</li><li>東京農業大学</li><li>神奈川大学</li><li>日本体育大学</li><li>順天堂大学</li><li>東京慈恵会医科大学</li><li>日本医科大学</li><li>昭和大学</li><li>東邦大学</li><li>北里大学</li><li>杏林大学</li><li>津田塾大学</li><li>東京女子大学</li><li>日本女子大学</li><li>聖心女子大学</li><li>共立女子大学</li><li>昭和女子大学</li><li>大妻女子大学</li><li>実践女子大学</li><li>白百合女子大学</li><li>清泉女子大学</li><li>女子美術大学</li><li>跡見学園女子大学</li><li>フェリス女学院大学</li><li>東洋英和女学院大学</li></ul><h3>国公立（中部）</h3><ul class="cats"><li>名古屋大学</li><li>名古屋工業大学</li><li>愛知教育大学</li><li>金沢大学</li><li>新潟大学</li><li>富山大学</li><li>福井大学</li><li>信州大学</li><li>山梨大学</li><li>静岡大学</li><li>岐阜大学</li><li>三重大学</li><li>名古屋市立大学</li><li>愛知県立大学</li><li>静岡県立大学</li><li>都留文科大学</li></ul><h3>私立（中部）</h3><ul class="cats"><li>南山大学</li><li>名城大学</li><li>愛知大学</li><li>中京大学</li><li>愛知学院大学</li><li>中部大学</li><li>名古屋外国語大学</li><li>金城学院大学</li><li>椙山女学園大学</li><li>金沢工業大学</li></ul><h3>国公立（近畿）</h3><ul class="cats"><li>京都大学</li><li>大阪大学</li><li>神戸大学</li><li>京都工芸繊維大学</li><li>奈良女子大学</li><li>滋賀大学</li><li>大阪教育大学</li><li>和歌山大学</li><li>大阪公立大学</li><li>京都府立大学</li><li>京都府立医科大学</li><li>兵庫県立大学</li><li>神戸市外国語大学</li></ul><h3>私立（近畿）</h3><ul class="cats"><li>同志社大学</li><li>立命館大学</li><li>関西大学</li><li>関西学院大学</li><li>京都産業大学</li><li>近畿大学</li><li>甲南大学</li><li>龍谷大学</li><li>摂南大学</li><li>神戸学院大学</li><li>追手門学院大学</li><li>桃山学院大学</li><li>京都外国語大学</li><li>関西外国語大学</li><li>大阪経済大学</li><li>大阪工業大学</li><li>佛教大学</li><li>天理大学</li><li>京都女子大学</li><li>同志社女子大学</li><li>京都光華女子大学</li><li>京都ノートルダム女子大学</li><li>武庫川女子大学</li><li>神戸女学院大学</li><li>甲南女子大学</li><li>神戸女子大学</li><li>大阪樟蔭女子大学</li></ul><h3>国公立（中国・四国）</h3><ul class="cats"><li>広島大学</li><li>岡山大学</li><li>鳥取大学</li><li>島根大学</li><li>山口大学</li><li>徳島大学</li><li>香川大学</li><li>愛媛大学</li><li>高知大学</li><li>県立広島大学</li></ul><h3>私立（中国・四国）</h3><ul class="cats"><li>広島修道大学</li><li>岡山理科大学</li><li>ノートルダム清心女子大学</li><li>松山大学</li></ul><h3>国公立（九州・沖縄）</h3><ul class="cats"><li>九州大学</li><li>九州工業大学</li><li>熊本大学</li><li>長崎大学</li><li>鹿児島大学</li><li>佐賀大学</li><li>大分大学</li><li>宮崎大学</li><li>琉球大学</li><li>北九州市立大学</li><li>福岡女子大学</li></ul><h3>私立（九州・沖縄）</h3><ul class="cats"><li>福岡大学</li><li>西南学院大学</li><li>久留米大学</li><li>九州産業大学</li><li>立命館アジア太平洋大学</li></ul><h2>よくある質問</h2><dl class="faq"><dt>どの大学に対応していますか？</dt><dd>旧帝大・早慶上智・MARCH・関関同立・日東駒専・産近甲龍・大東亜帝国・女子大など全国200校です。一覧にない大学は「関東の私立大学（理系）」のように地域・国公立か私立か・文系か理系かまで当てます。</dd><dt>何問くらいで当たりますか？</dt><dd>大体15〜25問です。大学が1つに絞れるまで質問します。</dd><dt>大学群（MARCHなど）の質問はどう答えればいい？</dt><dd>自分の大学が含まれていれば「そう」、含まれていなければ「違う」を選んでください。分からなければ「分からない」で大丈夫です。</dd><dt>無料ですか？ 登録は必要ですか？</dt><dd>無料で、登録も要りません。スマホでもパソコンでも遊べます。</dd><dt>答えた内容はどうなりますか？</dt><dd>名前などの個人情報は集めていません。答え合わせの結果だけを匿名で集計して、判定を賢くするために使います。</dd></dl><h2>他の「当てます」</h2><ul class="others"><li><a href="../">生まれ年当て</a>（年齢・何年生まれかを2択の質問で当てるアキネーター風の診断ゲーム）</li><li><a href="../club/">部活当て</a>（中学時代の部活を2択の質問で当てるアキネーター風の診断ゲーム）</li><li><a href="../baito/">バイト当て</a>（大学時代のアルバイトを2択の質問で当てるアキネーター風の診断ゲーム）</li></ul></section></div>
   </section>
 
   <!-- 質問 -->
@@ -918,7 +918,7 @@ const GAME_YEAR = (() => {
     factCats: ["64", "年分（1950〜2013年生まれ）に対応"],
     mapTitle: "候補の年", layout: "years", revealEyebrow: "あなたは…",
     outOfRange: "対応範囲（1950〜2013年）の外なので、学習には使いません。",
-    cats, ordered: true, maxQ: 18, guessTop: 0.55,
+    cats, ordered: true, maxQ: 25, guessTop: 0.6, guessBand: 0.9,
     questions: YEAR_QUESTIONS,
     priorP: (q, c) => interp(q.pts, +c.key),
     store: "year", seed: typeof SEED === "object" ? SEED : null, histKey: "guess-my-year-recent",
@@ -926,7 +926,7 @@ const GAME_YEAR = (() => {
       title: "生まれ年当て｜年齢・何年生まれかを2択の質問で当てるアキネーター風の診断ゲーム",
       description: "子どもの頃の記憶や学校・暮らしの変化についての2択に答えるだけで、あなたの生まれ年（1950〜2013年）を当てる無料の診断ゲーム。アキネーターのように質問が絞り込まれ、答え合わせが増えるほど賢くなります。",
       faq: [
-        ["何問くらいで当たりますか？", "大体10〜18問です。生まれ年が絞れた時点で、自動で予想を出します。途中で「もう当てて！」を押して予想させることもできます。"],
+        ["何問くらいで当たりますか？", "大体15〜25問です。生まれ年が絞れた時点で、自動で予想を出します。途中で「もう当てて！」を押して予想させることもできます。"],
         ["どうやって当てているのですか？", "「携帯電話・テレビ・学校・流行」などの質問ごとに、生まれ年ごとの答えやすさの表を持っていて、答えるたびにベイズ推定で確率を計算し直しています。"],
         ["問題文に年号が出ないのはなぜ？", "年号があると答えから年齢を計算できてしまい、ゲームとして面白くなくなるためです。記憶や体験だけで答えてください。"],
       ],
@@ -1075,6 +1075,16 @@ const CLUB_QUESTIONS = [
     p: { art: .55, science: .45, pc: .45, home: .45, chorus: .85, none: .02 } },
 ];
 
+// その人の答えから、もう答えが決まる質問（「毎日残っていた」なら「まっすぐ帰っていた？」は聞かない、など）
+const CLUB_SKIP = {
+  homeearly: [["daily", "a"], ["weekend", "a"], ["morning", "a"]], daily: [["homeearly", "a"]],
+  ball: [["goal", "a"], ["keeper", "a"], ["kick", "a"], ["bat", "a"]],
+  goal: [["ball", "b"]], keeper: [["ball", "b"], ["goal", "b"]], kick: [["ball", "b"]], bat: [["ball", "b"]],
+  score: [["instrument", "a"]],
+  create: [["cook", "a"], ["paint", "a"], ["lab", "a"]],
+};
+CLUB_QUESTIONS.forEach(q => { if (CLUB_SKIP[q.id]) q.skipIf = CLUB_SKIP[q.id]; });
+
 const GAME_CLUB = {
   id: "club", kind: "cat", tab: "部活", name: "部活当て",
   eyebrow: "2択に答えるだけ",
@@ -1084,7 +1094,7 @@ const GAME_CLUB = {
   mapTitle: "候補の部活", layout: "chips", revealEyebrow: "あなたの部活は…",
   pickLabel: "本当の部活",
   cats: CLUB_CATS.map(([key, label, short, big]) => ({ key, label, short, big: big || label })),
-  ordered: false, maxQ: 15, guessTop: 0.8,
+  ordered: false, maxQ: 25, guessTop: 0.95,
   questions: CLUB_QUESTIONS,
   priorP: (q, c) => (c.key in q.p ? q.p[c.key] : q.base),
   store: "game", seed: null, histKey: "guess-my-year-recent-club",
@@ -1093,7 +1103,7 @@ const GAME_CLUB = {
     description: "練習の場所や道具、夏の思い出についての2択に答えるだけで、あなたが中学で入っていた部活を当てる無料の診断ゲーム。野球部・サッカー部・吹奏楽部・帰宅部など20種類に対応しています。",
     faq: [
       ["どの部活に対応していますか？", "野球・ソフトボール・サッカー・バスケットボール・バレーボール・ハンドボール・テニス・卓球・バドミントン・陸上・水泳・剣道・柔道・吹奏楽・合唱・美術・科学・パソコン・家庭科と、帰宅部の20種類です。"],
-      ["何問くらいで当たりますか？", "大体6〜15問です。"],
+      ["何問くらいで当たりますか？", "大体8〜15問です。部活が1つに絞れるまで質問します。"],
       ["部活に入っていなかった場合は？", "「帰宅部」として当てます。部活についての質問には、違う・分からないで答えてください。"],
     ],
   },
@@ -1350,6 +1360,24 @@ const COLLEGE_OTHER = {
   kyushu: { kok: { fukuoka: .2, kumamoto: .1, nagasaki: .08, kagoshima: .1, okinawa: .1, saga: .1, oita: .12, miyazaki: .2 }, pri: { fukuoka: .55, kumamoto: .1, nagasaki: .08, kagoshima: .05, okinawa: .05, saga: .03, oita: .08, miyazaki: .06 } },
 };
 
+// 大学名の文字から出す特徴（名前の質問で使う）。名前が変わった大学で、旧名で答える人がいそうなものは半々にしておく
+const COLLEGE_PREF_NAMES = ["北海道", "青森", "岩手", "宮城", "秋田", "山形", "福島", "茨城", "栃木", "群馬", "埼玉", "千葉", "東京", "神奈川",
+  "新潟", "富山", "石川", "福井", "山梨", "長野", "岐阜", "静岡", "愛知", "三重", "滋賀", "京都", "大阪", "兵庫", "奈良", "和歌山",
+  "鳥取", "島根", "岡山", "広島", "山口", "徳島", "香川", "愛媛", "高知", "福岡", "佐賀", "長崎", "熊本", "大分", "宮崎", "鹿児島", "沖縄"];
+const COLLEGE_AREA_NAMES = ["関東", "関西", "東北", "九州", "近畿", "東海", "中部", "北陸", "四国"];
+const COLLEGE_NAME_FIX = { kagakudai: { kou: .5 }, chukyo: { areaName: .5 }, hokkaigakuen: { areaName: .5 } };
+function collegeNameFeatures(key, label) {
+  const name = label.replace(/（.*）$/, "").replace(/大[学學]$/, "");
+  const f = {
+    gakuin: name.includes("学院") ? 1 : 0,
+    prefName: COLLEGE_PREF_NAMES.some(p => name.replace(/^県立/, "").startsWith(p)) ? 1 : 0,
+    kou: name.includes("工") ? 1 : 0,
+    len2: name.length === 2 ? 1 : 0,
+    areaName: COLLEGE_AREA_NAMES.some(a => name.includes(a)) ? 1 : 0,
+  };
+  return Object.assign(f, COLLEGE_NAME_FIX[key] || {});
+}
+
 function parseCollegeTags(s) {
   const t = {};
   for (const w of s.split(/\s+/).filter(Boolean)) { const [k, v] = w.split(":"); t[k] = v ? +v : 1; }
@@ -1362,7 +1390,7 @@ const COLLEGE_CATS = (() => {
     return {
       key, label, short, big: label.replace(/（.*）$/, ""),
       group: (type === "pri" ? "私立" : "国公立") + "（" + COLLEGE_REGION_NAME[COLLEGE_REGION[Object.keys(pref)[0]]] + "）",
-      pref, type, tier, size, sci, tags: parseCollegeTags(tags), t23, tama,
+      pref, type, tier, size, sci, tags: parseCollegeTags(tags), t23, tama, names: collegeNameFeatures(key, label),
     };
   });
   for (const [reg, kinds] of Object.entries(COLLEGE_OTHER)) {
@@ -1383,6 +1411,9 @@ const COLLEGE_CATS = (() => {
           t23: reg === "kanto" ? (kind === "kok" ? .35 : .4) : 0,
           tama: reg === "kanto" ? (kind === "kok" ? .1 : .15) : 0,
           place: reg === "kanto" && kind === "pri" ? .05 : .01,
+          names: kind === "kok"
+            ? { gakuin: .01, prefName: .5, kou: field === "ri" ? .15 : .02, len2: .4, areaName: .05 }
+            : { gakuin: .12, prefName: .3, kou: field === "ri" ? .25 : .02, len2: .3, areaName: .05 },
         });
       }
     }
@@ -1398,7 +1429,7 @@ const cTag = (u, t, y, n) => cSoft(u.tags[t] || 0, y, n);
 // 場所の質問: 一覧にない大学は区分ごとの小さな値
 const cPlace = (u, t) => (u.other ? u.place : cTag(u, t));
 // 都道府県の質問をまとめて作る
-const cPrefQ = (id, q, a, keys) => ({ id, cat: "場所", q, a, b: "違う", f: u => cSoft(cPref(u, keys), .95, .03) });
+const cPrefQ = (id, q, a, keys) => ({ id, cat: "場所", q, a, b: "違う", prefs: keys, f: u => cSoft(cPref(u, keys), .95, .03) });
 // 大学群の質問をまとめて作る
 const cGroupQ = (id, q, tag) => ({ id, cat: "大学群", q, a: "そう", b: "違う", f: u => cTag(u, tag, .96, .01) });
 
@@ -1513,8 +1544,53 @@ const COLLEGE_QUESTIONS = [
   { id: "waseda", cat: "決め手", q: "式典などで、校歌『都の西北』を歌った？", a: "歌った", b: "違う", f: u => cTag(u, "waseda", .96, .01) },
   { id: "keio", cat: "決め手", q: "応援歌『若き血』を歌った？", a: "歌った", b: "違う", f: u => cTag(u, "keio", .96, .01) },
   { id: "todai", cat: "決め手", q: "キャンパスに赤門や安田講堂があった？", a: "あった", b: "違う", f: u => cTag(u, "todai", .96, .01) },
+  // ---- 名前（大学名の文字から出すので、まちがいがない） ----
+  { id: "n_gakuin", cat: "名前", q: "大学名に「学院」が入っている？（〇〇学院大学など）", a: "入っている", b: "入っていない", f: u => cSoft(u.names.gakuin, .95, .02) },
+  { id: "n_pref", cat: "名前", q: "大学名に都道府県の名前が入っている？（東京〇〇大学、〇〇県立大学など）", a: "入っている", b: "入っていない", f: u => cSoft(u.names.prefName, .95, .03) },
+  { id: "n_kou", cat: "名前", q: "大学名に「工」の字が入っている？（〇〇工業大学、工学院など）", a: "入っている", b: "入っていない", f: u => cSoft(u.names.kou, .95, .02) },
+  { id: "n_len2", cat: "名前", q: "「大学」を除いた大学名は2文字？（明治・立教・一橋など）", a: "2文字", b: "3文字以上", f: u => cSoft(u.names.len2, .95, .03) },
+  { id: "n_area", cat: "名前", q: "大学名に地方の名前（関東・関西・東北・九州・近畿・東海など）が入っている？", a: "入っている", b: "入っていない", f: u => cSoft(u.names.areaName, .95, .02) },
   { id: "kyodai", cat: "決め手", q: "キャンパスは京都の吉田（百万遍・銀閣寺の近く）だった？", a: "そう", b: "違う", f: u => cTag(u, "kyodai", .95, .01) },
 ];
+
+// 場所の答えから、その人の答えがもう決まる質問を見つける（キャンパスが複数ある大学は、確率だけでは決まらないため）。
+// 場所は「都道府県」を最小単位にし、東京だけは23区の街（池袋など）・23区のその他・多摩に分ける
+const COLLEGE_TOWNS = ["ikebukuro", "aoyama", "kanda", "ichigaya", "mejiro", "setagaya"];
+const cAtoms = keys => keys.flatMap(k => (k === "tokyo" ? [...COLLEGE_TOWNS.map(t => "t23." + t), "t23.etc", "tama"] : [k]));
+const COLLEGE_ALL_AREA = cAtoms(Object.keys(COLLEGE_REGION));
+const COLLEGE_AREA = {
+  t23: cAtoms(["tokyo"]).filter(a => a.startsWith("t23.")), tama: ["tama"],
+  ...Object.fromEntries(COLLEGE_TOWNS.map(t => [t, ["t23." + t]])),
+  west: cAtoms(Object.keys(COLLEGE_REGION).filter(k => ["kinki", "chushi", "kyushu"].includes(COLLEGE_REGION[k]))),
+  north: cAtoms(Object.keys(COLLEGE_REGION).filter(k => ["hokkaido", "tohoku"].includes(COLLEGE_REGION[k]))),
+  ...Object.fromEntries(["kanto", "kinki", "chubu", "kyushu", "chushi"].map(r => [r, cAtoms(Object.keys(COLLEGE_REGION).filter(k => COLLEGE_REGION[k] === r))])),
+};
+COLLEGE_QUESTIONS.forEach(q => { if (q.prefs) COLLEGE_AREA[q.id] = cAtoms(q.prefs); });
+
+// 場所の答えで残った範囲が、質問の範囲にすっぽり入る（答えは A）か、まったく重ならない（答えは B）なら決まっている
+function collegeImplied(q, side) {
+  const area = COLLEGE_AREA[q.id];
+  if (!area) return false;
+  let left = COLLEGE_ALL_AREA;
+  for (const [id, v] of Object.entries(side)) {
+    const a = COLLEGE_AREA[id]; if (!a) continue;
+    left = left.filter(x => a.includes(x) === (v === "a"));
+  }
+  if (!left.length || left.length === COLLEGE_ALL_AREA.length) return false;
+  const inside = left.filter(x => area.includes(x)).length;
+  return inside === left.length || inside === 0;
+}
+
+// 場所以外で、答えどうしが矛盾しない組み合わせ（「学生数1万5千人以上」なら「5千人未満」ではない、など）
+const COLLEGE_SKIP = {
+  small: [["big", "a"]], big: [["small", "a"]], huge: [["big", "b"], ["small", "a"]],
+  tier_a: [["tier_top", "a"]], tier_top: [["tier_a", "b"]],
+  kokkoritsu: [["national", "a"]], national: [["kokkoritsu", "b"]],
+  gmarch: [["march", "a"]], march: [["gmarch", "b"]],
+  soukeiri: [["soukei", "a"]], soukei: [["soukeiri", "b"]],
+  chatsupon: [["gosanke", "a"]], gosanke: [["chatsupon", "b"]],
+};
+COLLEGE_QUESTIONS.forEach(q => { if (COLLEGE_SKIP[q.id]) q.skipIf = COLLEGE_SKIP[q.id]; });
 
 const GAME_COLLEGE = {
   id: "college", kind: "cat", tab: "大学", name: "大学当て",
@@ -1525,16 +1601,16 @@ const GAME_COLLEGE = {
   mapTitle: "候補の大学（上位）", layout: "ranking", revealEyebrow: "あなたの大学は…",
   pickLabel: "本当の大学（一覧にない大学は一番下）",
   cats: COLLEGE_CATS,
-  ordered: false, maxQ: 22, guessTop: 0.7,
+  ordered: false, maxQ: 35, guessTop: 0.95,
   questions: COLLEGE_QUESTIONS,
-  priorP: (q, c) => q.f(c),
+  priorP: (q, c) => q.f(c), implied: collegeImplied,
   store: "game", seed: null, histKey: "guess-my-year-recent-college",
   seo: {
     title: "大学当て｜出身大学を2択の質問で当てるアキネーター風の診断ゲーム（200校）",
     description: "キャンパスの場所や大学の特徴、MARCH・関関同立・日東駒専などの大学群についての2択に答えるだけで、出身大学を当てる無料の診断ゲーム。全国200校に対応し、一覧にない大学も地域・国公私立・文理まで当てます。",
     faq: [
       ["どの大学に対応していますか？", "旧帝大・早慶上智・MARCH・関関同立・日東駒専・産近甲龍・大東亜帝国・女子大など全国200校です。一覧にない大学は「関東の私立大学（理系）」のように地域・国公立か私立か・文系か理系かまで当てます。"],
-      ["何問くらいで当たりますか？", "大体10〜22問です。"],
+      ["何問くらいで当たりますか？", "大体15〜25問です。大学が1つに絞れるまで質問します。"],
       ["大学群（MARCHなど）の質問はどう答えればいい？", "自分の大学が含まれていれば「そう」、含まれていなければ「違う」を選んでください。分からなければ「分からない」で大丈夫です。"],
     ],
   },
@@ -1736,6 +1812,19 @@ const BAITO_QUESTIONS = [
     p: { event: .97, security: .3 } },
 ];
 
+// その人の答えから、もう答えが決まる質問（「深夜の夜勤があった」なら「22時すぎまで働いた？」は聞かない、など）
+const BAITO_SKIP = {
+  late: [["night", "a"]], night: [["late", "b"]],
+  suit: [["uniform", "a"]], uniform: [["suit", "a"]],
+  phone: [["teleop", "a"]], teleop: [["phone", "b"]],
+  oneonone: [["visit", "a"]], visit: [["oneonone", "b"]],
+  heavy: [["moving", "a"]], moving: [["heavy", "b"]],
+  pc: [["code", "a"], ["datain", "a"]], code: [["pc", "b"]], datain: [["pc", "b"]],
+  register: [["customer", "b"]], recommend: [["customer", "b"]], irasshai: [["customer", "b"]],
+  alcohol: [["nomihodai", "a"]], nomihodai: [["alcohol", "b"]],
+};
+BAITO_QUESTIONS.forEach(q => { if (BAITO_SKIP[q.id]) q.skipIf = BAITO_SKIP[q.id]; });
+
 const GAME_BAITO = {
   id: "baito", kind: "cat", tab: "バイト", name: "バイト当て",
   eyebrow: "2択に答えるだけ",
@@ -1745,7 +1834,7 @@ const GAME_BAITO = {
   mapTitle: "候補のバイト", layout: "chips", revealEyebrow: "あなたのバイトは…",
   pickLabel: "本当のバイト",
   cats: BAITO_CATS.map(([key, label, short]) => ({ key, label, short, big: label.replace(/（.*）$/, "") })),
-  ordered: false, maxQ: 20, guessTop: 0.85,
+  ordered: false, maxQ: 30, guessTop: 0.95,
   questions: BAITO_QUESTIONS,
   priorP: (q, c) => (c.key in q.p ? q.p[c.key] : q.base),
   store: "game", seed: null, histKey: "guess-my-year-recent-baito",
@@ -1754,7 +1843,7 @@ const GAME_BAITO = {
     description: "働き方や職場の様子についての2択に答えるだけで、あなたが大学時代に一番頑張ったアルバイトを当てる無料の診断ゲーム。居酒屋・カフェ・コンビニ・塾講師・家庭教師・引越しなど39種類に対応しています。",
     faq: [
       ["どのバイトに対応していますか？", "飲食（ホール・キッチン・居酒屋・カフェ・ファストフードなど）、販売（コンビニ・スーパー・アパレルなど）、教える仕事（塾講師・家庭教師など）、娯楽・サービス、引越しやイベントなどの短期、事務やWeb制作まで39種類です。"],
-      ["何問くらいで当たりますか？", "大体8〜20問です。"],
+      ["何問くらいで当たりますか？", "大体12〜25問です。バイトが1つに絞れるまで質問します。"],
       ["バイトをいくつもしていた場合は？", "一番頑張ったバイト（長く続けた・印象に残っている）を思い浮かべて答えてください。"],
     ],
   },
@@ -1766,6 +1855,9 @@ const GAME_BAITO = {
 // def.questions 質問 [{ id, cat, q, a, b, ... }]
 // def.priorP    (質問, 候補, 候補の番号) → その候補の人が A と答える確率（学習前の値）
 // def.ordered   候補に順番がある（生まれ年）なら true。学習データを前後2つの候補にもにじませる
+// def.guessTop  最有力がこの確率に届いたら当てる。def.guessBand は順番がある候補で、前後1つまで含めた確率の基準（省略可）
+// def.implied   (質問, これまでの答え { 質問id: "a" | "b" }) → その人の答えがもう決まっているなら true（省略可）
+// 質問の skipIf [[質問id, "a" | "b"], ...] のどれかに当てはまる答えをしていたら、その質問は出さない（省略可）
 
 function interp(pts, y) {
   if (y <= pts[0][0]) return pts[0][1];
@@ -1794,6 +1886,20 @@ const SAME_CAT_WEIGHT = 0.6;  // 直前と同じ分野は情報量を4割引き
 const POOL_RATIO = 0.7;       // 最良の7割以上の情報量がある質問を候補にする
 const POOL_MAX = 8, FIRST_POOL = 20;
 const MIN_Q = 6;
+// 答えが決まっている質問は出さない。確率の高い順に合計99%に入る候補を「残っている候補」とし、
+// 残った候補がみな8割以上同じ側に答える質問は、聞いても意味がないので外す
+const ALIVE_MASS = 0.99, SURE_P = 0.8;
+const MIN_GAIN = 0.01;        // これ未満しか絞れない質問しか残っていなければ、聞くのをやめて当てる
+
+// 答えの記録 { 質問id: "a" | "b" | "pa" | "pb" | ... } → 言い切りと「たぶん」をまとめた { 質問id: "a" | "b" }
+function sideOf(answers) {
+  const s = {};
+  for (const [id, v] of Object.entries(answers || {})) {
+    if (v === "a" || v === "pa") s[id] = "a";
+    else if (v === "b" || v === "pb") s[id] = "b";
+  }
+  return s;
+}
 
 function entropy(pi) { let h = 0; for (const v of pi) if (v > 1e-12) h -= v * Math.log2(v); return h; }
 function normalize(pi) { const s = pi.reduce((x, v) => x + v, 0); return pi.map(v => v / s); }
@@ -1858,12 +1964,32 @@ function makeEngine(def) {
     return h0 - exp;
   }
 
+  // 答えがもう決まっている質問か。その人の答えから論理的に決まるもの（skipIf・def.implied）と、
+  // 残った候補がみな同じ側に答えるもの
+  function settled(model, qi, side, alive) {
+    const q = Q[qi];
+    if (q.skipIf && q.skipIf.some(([id, v]) => side[id] === v)) return true;
+    if (def.implied && def.implied(q, side)) return true;
+    let lo = 1, hi = 0;
+    for (const ci of alive) { const p = model.P[qi][ci]; if (p < lo) lo = p; if (p > hi) hi = p; }
+    return lo >= SURE_P || hi <= 1 - SURE_P;
+  }
+
+  function aliveSet(pi) {
+    const order = pi.map((v, i) => i).sort((x, y) => pi[y] - pi[x]), out = [];
+    let s = 0;
+    for (const i of order) { out.push(i); s += pi[i]; if (s >= ALIVE_MASS) break; }
+    return out;
+  }
+
   // 情報量が上位に近い候補の中から、情報量に比例した確率で抽選する
-  function pickQuestion(pi, model, asked, rand, recent, lastCats) {
+  // answers: これまでの答え { 質問id: 答え }。答えが決まっている質問は候補にしない
+  function pickQuestion(pi, model, asked, rand, recent, lastCats, answers) {
     rand = rand || Math.random; recent = recent || {}; lastCats = lastCats || [];
+    const side = sideOf(answers), alive = aliveSet(pi);
     const scored = [];
     Q.forEach((q, qi) => {
-      if (asked.has(qi)) return;
+      if (asked.has(qi) || settled(model, qi, side, alive)) return;
       const g = infoGain(pi, model, qi);
       let w = 1 - RECENT_WEIGHT * (recent[q.id] || 0);
       if (q.cat && lastCats.includes(q.cat)) w *= SAME_CAT_WEIGHT;
@@ -1895,15 +2021,17 @@ function makeEngine(def) {
     return Math.max(0, (band(pi) - base) / (1 - base));
   }
 
-  function shouldGuess(pi, model, asked) {
+  // 1つに決まる（最有力が guessTop 以上）まで聞く。聞くことがなくなったときと、上限に達したときは途中でも当てる
+  function shouldGuess(pi, model, asked, answers) {
     const n = asked.size;
     if (n >= def.maxQ) return true;
+    const next = pickQuestion(pi, model, asked, () => 0, null, null, answers);
+    if (!next) return true;
     if (n < MIN_Q) return false;
-    const top = pi[argmax(pi)];
-    if (top >= def.guessTop) return true;
-    if (def.ordered && band(pi) >= 0.9 && n >= 10) return true;
-    const next = pickQuestion(pi, model, asked, () => 0);
-    return !next || next.gain < 0.03;
+    if (pi[argmax(pi)] >= def.guessTop) return true;
+    // 順番がある候補（生まれ年）は、隣どうしを見分ける質問が少ないので、前後1つまで含めて決まれば当てる
+    if (def.guessBand && band(pi) >= def.guessBand) return true;
+    return next.gain < MIN_GAIN;
   }
 
   // 順番がある候補だけ: 最有力から左右に広げて、確率の合計が mass に届く範囲（候補の番号）
@@ -2257,10 +2385,12 @@ const UmareStore = (() => {
 
   const Qs = () => game.t.def.questions;
   function lastCats() { return game.log.slice(-2).map(l => Qs()[l.qi].cat).filter(Boolean); }
+  function answerMap() { return Object.fromEntries(game.log.map(l => [Qs()[l.qi].id, l.ans])); }
 
   function step() {
-    if (game.E.shouldGuess(game.pi, game.model, game.asked)) return finish();
-    const pk = game.E.pickQuestion(game.pi, game.model, game.asked, Math.random, game.recent, lastCats());
+    const ans = answerMap();
+    if (game.E.shouldGuess(game.pi, game.model, game.asked, ans)) return finish();
+    const pk = game.E.pickQuestion(game.pi, game.model, game.asked, Math.random, game.recent, lastCats(), ans);
     if (!pk) return finish();
     showQuestion(pk.qi, true);
     show("q");
