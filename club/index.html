@@ -79,8 +79,9 @@ button { font: inherit; color: inherit; }
   display: flex; flex-direction: column; gap: 16px;
 }
 .app > .bar, .app > .tabs { order: 0; } .app > .meter { order: 1; } .app > .view { order: 2; } .app > .map { order: 3; } .app > .foot { order: 4; }
-.app[data-view="q"] > .map, .app[data-view="r"] > .map { order: 2; }
-.app[data-view="q"] > .view, .app[data-view="r"] > .view { order: 3; }
+/* 質問中は候補マップを質問の上に。結果画面では予想と「当たってた？」を先に見せたいので、マップは下のまま */
+.app[data-view="q"] > .map { order: 2; }
+.app[data-view="q"] > .view { order: 3; }
 
 /* ヘッダー */
 .bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 36px; }
@@ -119,9 +120,10 @@ button { font: inherit; color: inherit; }
 .check-card { border: 2px solid var(--accent); background: var(--accent-soft); }
 .check-card .card-title { font-size: 20px; }
 .check-lede { margin: -4px 0 0; font-size: 13px; color: var(--muted); }
-.check-btn { font-size: 17px; font-weight: 800; padding: 15px 12px; border: 1.5px solid var(--line); box-shadow: var(--shadow); }
-.check-btn:hover { border-color: var(--accent); color: var(--accent); }
-.check-btn[aria-expanded="true"] { border-color: var(--accent); color: var(--accent); }
+.check-card .check-btn { font-size: 18px; font-weight: 800; padding: 17px 12px; border: 0; background: var(--accent); color: var(--accent-ink); box-shadow: var(--shadow); }
+.check-card .check-btn:hover { filter: brightness(1.08); }
+.check-card .check-btn:active { transform: translateY(1px); }
+.check-card .check-btn[aria-expanded="true"] { box-shadow: 0 0 0 3px var(--surface), 0 0 0 5px var(--accent); }
 .note { margin: 0; font-size: 12.5px; color: var(--muted); }
 .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .cta {
@@ -139,6 +141,8 @@ button { font: inherit; color: inherit; }
 .share-main { display: flex; align-items: center; justify-content: center; gap: 8px; background: var(--accent); color: var(--accent-ink); border-color: transparent; }
 .share-main:hover { border-color: transparent; filter: brightness(1.06); }
 .share-main svg { width: 18px; height: 18px; }
+/* 答え合わせが済むまでは共有ボタンを控えめにして、「当たってた？」を先に押してもらう */
+.app[data-checked="no"] .share-main { background: transparent; color: var(--accent); border: 1.5px solid var(--accent); }
 
 .sheet-back { position: fixed; inset: 0; z-index: 50; background: rgba(0, 0, 0, .45); display: flex; align-items: flex-end; justify-content: center; }
 .sheet {
@@ -2330,6 +2334,7 @@ const UmareStore = (() => {
       $("catInput").value = String(i);
     }
     $("check").hidden = false; $("pick").hidden = true; $("after").hidden = true;
+    $("app").dataset.checked = "no";
     $("miss").setAttribute("aria-expanded", "false");
     setShare(def.name + "：" + n + "問で予想されました！");
     renderHist();
@@ -2396,6 +2401,7 @@ const UmareStore = (() => {
       msg = n + "問で" + (hit ? "ズバリ当てられた！" : "予想されたけど、はずれでした。");
     }
     $("check").hidden = true; $("after").hidden = false;
+    $("app").dataset.checked = "yes";
     setShare(def.name + "：" + msg);
     paint(game.pi, { top: game.guessIdx, range: game.range, truth: truthIdx >= 0 ? truthIdx : undefined });
     $("vLearn").textContent = "保存中…";
