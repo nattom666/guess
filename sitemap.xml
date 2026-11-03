@@ -2,7 +2,7 @@
 <!-- 1ページだけのサイト。ドメイン直下のサイトマップインデックス（apps/pages_root）から束ねている。 -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
-  <loc>https://nattom666.github.io/guess-my-year/</loc>
+  <loc>https://nattom666.github.io/guess/</loc>
   <changefreq>monthly</changefreq>
 </url>
 </urlset>
