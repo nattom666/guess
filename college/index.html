@@ -189,6 +189,7 @@ h1 .hl { color: var(--accent); }
 /* 質問 */
 .qhead { display: flex; align-items: center; gap: 10px; }
 .qno { font-family: var(--f-display); font-weight: 800; font-size: 15px; color: var(--accent); font-variant-numeric: tabular-nums; }
+.extra-note { margin: -4px 0 0; font-size: 13px; font-weight: 700; color: var(--accent); }
 .chip { font-size: 12px; font-weight: 700; color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 2px 10px; }
 .chip:empty { display: none; }
 .qtext { margin: 0; font-weight: 800; font-size: clamp(20px, 5.4vw, 23px); line-height: 1.55; text-wrap: pretty; min-height: 3.1em; }
@@ -233,6 +234,7 @@ h1 .hl { color: var(--accent); }
 .wareki:empty { display: none; }
 .range { margin: 0; font-size: 14px; color: var(--muted); }
 .pick { display: flex; flex-direction: column; gap: 10px; padding-top: 4px; }
+.pick .retry { font-weight: 800; border: 2px solid var(--accent); color: var(--accent); background: var(--surface); }
 .pick-part { display: flex; flex-direction: column; gap: 10px; }
 .pick label { font-size: 14px; font-weight: 700; }
 .select {
@@ -359,6 +361,7 @@ h1 .hl { color: var(--accent); }
       <span class="qno" id="qno"></span>
       <span class="chip" id="qcat"></span>
     </div>
+    <p class="extra-note" id="extraNote" hidden></p>
     <h2 class="qtext" id="qtext"></h2>
     <div class="answers">
       <button class="opt" id="ansA" type="button"><span class="key">A</span><span class="opt-text" id="ansAText"></span></button>
@@ -392,6 +395,7 @@ h1 .hl { color: var(--accent); }
         <button class="btn2 check-btn" id="miss" type="button" aria-expanded="false">違う</button>
       </div>
       <div class="pick" id="pick" hidden>
+        <button class="btn2 retry" id="retry" type="button"></button>
         <div class="pick-part" id="pickYear">
           <label for="yearInput">本当の生まれ年（西暦）</label>
           <div class="stepper">
@@ -918,7 +922,7 @@ const GAME_YEAR = (() => {
     factCats: ["64", "年分（1950〜2013年生まれ）に対応"],
     mapTitle: "候補の年", layout: "years", revealEyebrow: "あなたは…",
     outOfRange: "対応範囲（1950〜2013年）の外なので、学習には使いません。",
-    cats, ordered: true, maxQ: 25, guessTop: 0.6, guessBand: 0.9,
+    cats, ordered: true, maxQ: 20, guessTop: 0.6, guessBand: 0.9,
     questions: YEAR_QUESTIONS,
     priorP: (q, c) => interp(q.pts, +c.key),
     store: "year", seed: typeof SEED === "object" ? SEED : null, histKey: "guess-my-year-recent",
@@ -1247,7 +1251,7 @@ const GAME_CLUB = {
   mapTitle: "候補の部活", layout: "chips", revealEyebrow: "あなたの部活は…",
   pickLabel: "本当の部活",
   cats: CLUB_CATS.map(([key, label, short, big]) => ({ key, label, short, big: big || label })),
-  ordered: false, maxQ: 30, guessTop: 0.95,
+  ordered: false, maxQ: 20, guessTop: 0.95,
   questions: CLUB_QUESTIONS,
   priorP: (q, c) => (c.key in q.p ? q.p[c.key] : q.base),
   store: "game", seed: null, histKey: "guess-my-year-recent-club",
@@ -1859,7 +1863,7 @@ const GAME_COLLEGE = {
   mapTitle: "候補の大学（上位）", layout: "ranking", revealEyebrow: "あなたの大学は…",
   pickLabel: "本当の大学（一覧にない大学は一番下）",
   cats: COLLEGE_CATS,
-  ordered: false, maxQ: 35, guessTop: 0.95,
+  ordered: false, maxQ: 28, guessTop: 0.95,
   questions: COLLEGE_QUESTIONS,
   priorP: (q, c) => q.f(c), implied: collegeImplied,
   store: "game", seed: null, histKey: "guess-my-year-recent-college",
@@ -2092,7 +2096,7 @@ const GAME_BAITO = {
   mapTitle: "候補のバイト", layout: "chips", revealEyebrow: "あなたのバイトは…",
   pickLabel: "本当のバイト",
   cats: BAITO_CATS.map(([key, label, short]) => ({ key, label, short, big: label.replace(/（.*）$/, "") })),
-  ordered: false, maxQ: 30, guessTop: 0.95,
+  ordered: false, maxQ: 24, guessTop: 0.95,
   questions: BAITO_QUESTIONS,
   priorP: (q, c) => (c.key in q.p ? q.p[c.key] : q.base),
   store: "game", seed: null, histKey: "guess-my-year-recent-baito",
@@ -2148,6 +2152,10 @@ const MIN_Q = 6;
 // 残った候補がみな8割以上同じ側に答える質問は、聞いても意味がないので外す
 const ALIVE_MASS = 0.99, SURE_P = 0.8;
 const MIN_GAIN = 0.01;        // これ未満しか絞れない質問しか残っていなければ、聞くのをやめて当てる
+// 延長戦: 上限まで聞いても確信度がこれ未満なら、1回だけ EXTRA_Q 問まで足す
+const EXTRA_BELOW = 0.6, EXTRA_Q = 6;
+// 外れたら続行: 外れた候補を消して、RETRY_MIN〜RETRY_Q 問聞いて当て直す。予想は MAX_GUESSES 回まで
+const RETRY_MIN = 2, RETRY_Q = 5, MAX_GUESSES = 3;
 
 // 答えの記録 { 質問id: "a" | "b" | "pa" | "pb" | ... } → 言い切りと「たぶん」をまとめた { 質問id: "a" | "b" }
 function sideOf(answers) {
@@ -2280,12 +2288,14 @@ function makeEngine(def) {
   }
 
   // 1つに決まる（最有力が guessTop 以上）まで聞く。聞くことがなくなったときと、上限に達したときは途中でも当てる
-  function shouldGuess(pi, model, asked, answers) {
+  // lim = { max, min }: 延長戦・当て直しのときの上限と最低限の問数（省略すると def.maxQ と MIN_Q）
+  function shouldGuess(pi, model, asked, answers, lim) {
+    lim = lim || { max: def.maxQ, min: MIN_Q };
     const n = asked.size;
-    if (n >= def.maxQ) return true;
+    if (n >= lim.max) return true;
     const next = pickQuestion(pi, model, asked, () => 0, null, null, answers);
     if (!next) return true;
-    if (n < MIN_Q) return false;
+    if (n < lim.min) return false;
     if (pi[argmax(pi)] >= def.guessTop) return true;
     // 順番がある候補（生まれ年）は、隣どうしを見分ける質問が少ないので、前後1つまで含めて決まれば当てる
     if (def.guessBand && band(pi) >= def.guessBand) return true;
@@ -2302,7 +2312,13 @@ function makeEngine(def) {
     return [lo, hi];
   }
 
-  return { N, buildModel, update, pickQuestion, shouldGuess, confidence, credibleRange };
+  // 上限まで聞いても絞りきれていないか（延長戦をするか）
+  function needsExtra(pi) { return confidence(pi) < EXTRA_BELOW; }
+
+  // 外れた候補を消す
+  function exclude(pi, ci) { return normalize(pi.map((v, i) => (i === ci ? 0 : v))); }
+
+  return { N, buildModel, update, pickQuestion, shouldGuess, confidence, credibleRange, needsExtra, exclude };
 }
 
 function wareki(y) {
@@ -2477,8 +2493,9 @@ const UmareStore = (() => {
     if (!t.storeReady) setStatus(t, "学習データの保存先が未設定です（基本データで判定します）", false);
   }
 
-  function pushHist(t, ids) {
-    t.hist = [ids, ...t.hist].slice(0, 6);
+  // replace: 当て直しのときは、同じゲームの記録を差し替える
+  function pushHist(t, ids, replace) {
+    t.hist = [ids, ...t.hist.slice(replace ? 1 : 0)].slice(0, 6);
     try { localStorage.setItem(t.def.histKey, JSON.stringify(t.hist)); } catch (e) {}
   }
 
@@ -2635,7 +2652,8 @@ const UmareStore = (() => {
 
   function newGame() {
     game = { t: tab, E: tab.E, model: tab.model, recent: recentWeights(tab.hist), pi: tab.model.prior.slice(),
-             asked: new Set(), log: [], stack: [], cur: null, guessIdx: null, done: false, histSaved: false };
+             asked: new Set(), log: [], stack: [], cur: null, guessIdx: null, done: false, histSaved: false,
+             lim: null, extra: 0, extraKind: "", guesses: 0, floor: 0 };
     paint(game.pi); setMeter(game.pi);
     step();
     window.scrollTo({ top: 0 });
@@ -2645,9 +2663,21 @@ const UmareStore = (() => {
   function lastCats() { return game.log.slice(-2).map(l => Qs()[l.qi].cat).filter(Boolean); }
   function answerMap() { return Object.fromEntries(game.log.map(l => [Qs()[l.qi].id, l.ans])); }
 
+  // 延長戦・当て直しを始める。k 問まで足し、当て直しのときは最低 min 問は聞く
+  function extend(kind, k, min) {
+    const n = game.asked.size;
+    game.extra++; game.extraKind = kind;
+    game.lim = { max: n + k, min: n + min };
+  }
+
   function step() {
-    const ans = answerMap();
-    if (game.E.shouldGuess(game.pi, game.model, game.asked, ans)) return finish();
+    const ans = answerMap(), E = game.E;
+    if (E.shouldGuess(game.pi, game.model, game.asked, ans, game.lim)) {
+      // 上限まで聞いても絞りきれていなければ、1回だけ延長戦
+      if (game.extra > 0 || !E.needsExtra(game.pi)) return finish();
+      extend("extra", EXTRA_Q, 0);
+      if (E.shouldGuess(game.pi, game.model, game.asked, ans, game.lim)) return finish();
+    }
     const pk = game.E.pickQuestion(game.pi, game.model, game.asked, Math.random, game.recent, lastCats(), ans);
     if (!pk) return finish();
     showQuestion(pk.qi, true);
@@ -2657,13 +2687,15 @@ const UmareStore = (() => {
   function showQuestion(qi, animate) {
     game.cur = qi;
     const q = Qs()[qi], n = game.asked.size + 1;
-    $("qno").textContent = "Q" + n;
+    $("qno").textContent = "Q" + n + (game.extra ? "（延長戦）" : "");
     $("qcat").textContent = q.cat || "";
-    $("qcount").textContent = n + "問目";
+    $("qcount").textContent = game.extra ? "延長 " + game.extra : n + "問目";
+    $("extraNote").hidden = !game.extra;
+    $("extraNote").textContent = game.extraKind === "retry" ? "外れちゃった… もう少しだけ聞かせてください" : "延長戦！ もう少しだけ聞かせてください";
     $("qtext").textContent = q.q;
     $("ansAText").textContent = q.a;
     $("ansBText").textContent = q.b;
-    $("back").hidden = game.stack.length === 0;
+    $("back").hidden = game.stack.length <= game.floor;
     if (animate) for (const id of ["qtext", "ansA", "ansB", "softRow", "ansM"]) { const el = $(id); el.classList.remove("fade"); void el.offsetWidth; el.classList.add("fade"); }
   }
 
@@ -2679,7 +2711,7 @@ const UmareStore = (() => {
   }
 
   function undo() {
-    if (!game || !game.stack.length) return;
+    if (!game || game.stack.length <= game.floor) return;
     const last = game.stack.pop();
     game.asked.delete(last.qi);
     game.log.pop();
@@ -2702,10 +2734,10 @@ const UmareStore = (() => {
 
   function finish() {
     const def = game.t.def, i = argmax(game.pi), n = game.log.length;
-    game.guessIdx = i;
-    if (!game.histSaved) { game.histSaved = true; pushHist(game.t, game.log.map(l => Qs()[l.qi].id)); }
+    game.guessIdx = i; game.guesses++;
+    pushHist(game.t, game.log.map(l => Qs()[l.qi].id), game.histSaved); game.histSaved = true;
     $("qcount").textContent = n + "問で判定";
-    $("rEyebrow").textContent = def.revealEyebrow;
+    $("rEyebrow").textContent = (game.guesses > 1 ? game.guesses + "回目の予想。" : "") + def.revealEyebrow;
     const main = $("rMain");
     if (def.kind === "year") {
       const r = game.E.credibleRange(game.pi, 0.8), y = +def.cats[i].key;
@@ -2726,13 +2758,30 @@ const UmareStore = (() => {
       $("catInput").value = String(i);
     }
     $("check").hidden = false; $("pick").hidden = true; $("after").hidden = true;
+    const left = MAX_GUESSES - game.guesses;
+    $("retry").hidden = left <= 0;
+    $("retry").textContent = "もう少し聞いて当て直して（あと" + left + "回）";
     $("app").dataset.checked = "no";
     $("miss").setAttribute("aria-expanded", "false");
-    setShare(def.name + "：" + n + "問で予想されました！");
+    setShare(def.name + "：" + n + "問" + nth() + "予想されました！");
     renderHist();
     paint(game.pi, { top: i, range: game.range }); setMeter(game.pi);
     const rv = $("reveal"); rv.classList.remove("fade"); void rv.offsetWidth; rv.classList.add("fade");
     show("r");
+    window.scrollTo({ top: 0 });
+  }
+
+  // 「で」または「・2回目で」。共有文に入れる
+  function nth() { return game.guesses > 1 ? "・" + game.guesses + "回目で" : "で"; }
+
+  // 外れた候補を消して、質問を続ける
+  function retry() {
+    if (!game || game.done || game.guesses >= MAX_GUESSES) return;
+    game.pi = game.E.exclude(game.pi, game.guessIdx);
+    game.floor = game.stack.length;   // 予想より前の答えには戻らない
+    extend("retry", RETRY_Q, RETRY_MIN);
+    paint(game.pi); setMeter(game.pi);
+    step();
     window.scrollTo({ top: 0 });
   }
 
@@ -2783,14 +2832,14 @@ const UmareStore = (() => {
       const guessY = +def.cats[game.guessIdx].key, d = Math.abs(truth - guessY);
       truthIdx = def.cats.findIndex(c => +c.key === truth);
       vt.classList.toggle("hit", d === 0);
-      vt.textContent = d === 0 ? "ピタリ！" : d === 1 ? "惜しい！ 1年ずれ" : d + "年ずれ。悔しい…";
-      msg = n + "問で" + (d === 0 ? "ズバリ当てられた！" : "予想され、" + d + "年ずれでした。");
+      vt.textContent = d === 0 ? (game.guesses > 1 ? game.guesses + "回目でピタリ！" : "ピタリ！") : d === 1 ? "惜しい！ 1年ずれ" : d + "年ずれ。悔しい…";
+      msg = n + "問" + nth() + (d === 0 ? "ズバリ当てられた！" : "予想され、" + d + "年ずれでした。");
     } else {
       truthIdx = truth;
       const hit = truthIdx === game.guessIdx;
       vt.classList.toggle("hit", hit);
-      vt.textContent = hit ? "ピタリ！" : "外れ… 正解は" + def.cats[truthIdx].label;
-      msg = n + "問で" + (hit ? "ズバリ当てられた！" : "予想されたけど、外れでした。");
+      vt.textContent = hit ? (game.guesses > 1 ? game.guesses + "回目でピタリ！" : "ピタリ！") : "外れ… 正解は" + def.cats[truthIdx].label;
+      msg = n + "問" + nth() + (hit ? "ズバリ当てられた！" : "予想されたけど、外れでした。");
     }
     $("check").hidden = true; $("after").hidden = false;
     $("app").dataset.checked = "yes";
@@ -2819,6 +2868,7 @@ const UmareStore = (() => {
     $("pick").hidden = false; $("miss").setAttribute("aria-expanded", "true");
     (game.t.def.kind === "year" ? $("yearInput") : $("catInput")).focus();
   });
+  $("retry").addEventListener("click", retry);
   $("yMinus").addEventListener("click", () => { $("yearInput").value = clampYear($("yearInput").value) - 1; syncWareki(); });
   $("yPlus").addEventListener("click", () => { $("yearInput").value = clampYear($("yearInput").value) + 1; syncWareki(); });
   $("yearInput").addEventListener("input", syncWareki);
